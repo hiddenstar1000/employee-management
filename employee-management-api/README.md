@@ -1,27 +1,30 @@
 # Employee Management API
 
-A modern Spring Boot RESTful API for employee management built with Java 25, Spring Boot 3.4.2, Spring Data JPA, and H2 Database.
+A modern Spring Boot RESTful API for employee management built with Java 25, Spring Boot 3.4.2, Spring Data MongoDB (Runtime), and H2 In-Memory Database (Automated Testing).
 
 ## Features
 
-- **RESTful Endpoints**: Full CRUD operations for employee resources.
-- **Spring Data JPA & H2**: In-memory database with automatic schema generation and H2 web console access.
-- **Constructor Injection**: Clean, testable, and immutable dependency injection pattern.
-- **Unit & Integration Testing**: 19 test cases covering controllers, services, and repositories using JUnit 5, Mockito, and Spring `@DataJpaTest`.
+- **RESTful Endpoints**: Full CRUD operations for employee resources (`GET`, `POST`, `PUT`, `DELETE`).
+- **Dual Database Persistence Architecture**:
+  - **Runtime Application**: Uses **Spring Data MongoDB** connecting dynamically via `MONGODB_URI` from `.env`.
+  - **Automated Tests**: Uses **Spring Data JPA & H2 In-Memory Database** (`jdbc:h2:mem:employeedb`), ensuring fast, isolated testing without requiring an active database server.
+- **Auto UUID Generation**: Automatically generates a unique UUID string when creating new employees if an ID is not supplied.
+- **Global Exception Handling**: Graceful exception handling for database connection timeouts (`MongoException`) returning friendly `503 Service Unavailable` JSON responses.
+- **Comprehensive Testing**: 20 test cases covering controllers, services, and repositories using JUnit 5, Mockito, and Spring `@DataJpaTest`.
 - **CORS Configured**: Pre-configured for cross-origin frontend requests.
 
 ---
 
 ## Tech Stack
 
-| Technology | Version / Tool |
-| :--- | :--- |
-| **Java** | 25 (Compiler Target 21) |
-| **Framework** | Spring Boot 3.4.2 |
-| **Persistence** | Spring Data JPA / Hibernate |
-| **Database** | H2 In-Memory Database |
-| **Build Tool** | Apache Maven 3.9+ |
-| **Testing** | JUnit 5, Mockito, Spring MockMvc |
+| Technology | Version / Tool | Purpose |
+| :--- | :--- | :--- |
+| **Java** | 25 (Compiler Target 21) | Core Programming Language |
+| **Framework** | Spring Boot 3.4.2 | Backend Framework |
+| **Persistence (Runtime)** | Spring Data MongoDB | Production & Dev NoSQL Data Layer |
+| **Persistence (Testing)** | Spring Data JPA / H2 | Isolated In-Memory SQL Test Database |
+| **Build Tool** | Apache Maven 3.9+ | Dependency & Build Management |
+| **Testing** | JUnit 5, Mockito, MockMvc | Automated Testing Suite |
 
 ---
 
@@ -29,19 +32,27 @@ A modern Spring Boot RESTful API for employee management built with Java 25, Spr
 
 ```text
 employee-management-api/
+├── .env
+├── .env-example
 ├── pom.xml
 ├── README.md
 └── src/
     ├── main/
     │   ├── java/net/dixonai/employeemanagement/
     │   │   ├── EmployeeManagementApiApplication.java
+    │   │   ├── config/
+    │   │   │   └── DataConfig.java
     │   │   ├── controller/
     │   │   │   ├── EmployeeController.java
     │   │   │   └── WelcomeController.java
+    │   │   ├── exception/
+    │   │   │   └── GlobalExceptionHandler.java
     │   │   ├── model/
     │   │   │   └── Employee.java
     │   │   ├── repository/
-    │   │   │   └── EmployeeRepository.java
+    │   │   │   ├── EmployeeRepository.java (Common Interface)
+    │   │   │   ├── JpaEmployeeRepository.java (Test Profile)
+    │   │   │   └── MongoEmployeeRepository.java (App Profile)
     │   │   └── service/
     │   │       └── EmployeeService.java
     │   └── resources/
@@ -56,9 +67,7 @@ employee-management-api/
         │   └── service/
         │       └── EmployeeServiceTest.java
         └── resources/
-            ├── application.properties
-            └── mockito-extensions/
-                └── org.mockito.plugins.MockMaker
+            └── application.properties
 ```
 
 ---
@@ -69,8 +78,18 @@ employee-management-api/
 
 - **Java Development Kit (JDK)**: Java 21 or Java 25+
 - **Maven**: 3.8+
+- **MongoDB** (Cloud Atlas or Local Instance for normal app runtime)
 
-### Installation & Setup
+### Environment Setup
+
+Create a `.env` file in `employee-management-api/`:
+
+```env
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/employee-management?retryWrites=true&w=majority&serverSelectionTimeoutMS=5000
+PORT=8080
+```
+
+### Installation & Execution
 
 1. **Navigate to the API directory**:
    ```bash
@@ -84,7 +103,7 @@ employee-management-api/
 
 3. **Run tests**:
    ```bash
-   mvn test
+   mvn clean test
    ```
 
 4. **Run the Application**:
@@ -121,7 +140,6 @@ The application will start on `http://localhost:8080`.
 ### Create Employee (`POST /employees`)
 ```json
 {
-  "id": "emp-101",
   "firstName": "John",
   "lastName": "Doe",
   "emailId": "john.doe@example.com",
@@ -129,7 +147,9 @@ The application will start on `http://localhost:8080`.
 }
 ```
 
-### Update Employee (`PUT /employees/emp-101`)
+*Note: If `id` is omitted, the API automatically generates a UUID.*
+
+### Update Employee (`PUT /employees/{id}`)
 ```json
 {
   "firstName": "Johnathan",
@@ -141,29 +161,18 @@ The application will start on `http://localhost:8080`.
 
 ---
 
-## Database Access (H2 Console)
-
-An in-memory H2 database console is enabled for development:
-
-- **URL**: `http://localhost:8080/h2-console`
-- **JDBC URL**: `jdbc:h2:mem:employeedb`
-- **User Name**: `sa`
-- **Password**: *(leave blank)*
-
----
-
 ## Testing
 
-Run all 19 unit and integration tests using Maven:
+Run all 20 unit and integration tests using Maven:
 ```bash
-mvn test
+mvn clean test
 ```
 
 ### Test Coverage Summary:
-- **`EmployeeServiceTest`**: Unit tests for business logic and exception handling.
+- **`EmployeeServiceTest`**: Unit tests for business logic, CRUD, and automatic UUID generation.
 - **`EmployeeControllerTest`**: MockMvc controller tests for HTTP status codes and JSON responses.
 - **`WelcomeControllerTest`**: Unit test for root status endpoint.
-- **`EmployeeRepositoryTest`**: `@DataJpaTest` integration tests against H2 database.
+- **`EmployeeRepositoryTest`**: Integration tests against H2 in-memory database using `@DataJpaTest` and `@ActiveProfiles("test")`.
 
 ---
 
