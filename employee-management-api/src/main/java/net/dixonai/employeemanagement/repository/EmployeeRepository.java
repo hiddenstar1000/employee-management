@@ -1,9 +1,11 @@
 package net.dixonai.employeemanagement.repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.repository.ListCrudRepository;
+import org.springframework.data.repository.NoRepositoryBean;
 import net.dixonai.employeemanagement.model.Employee;
 
-@Repository
-public interface EmployeeRepository extends JpaRepository<Employee, String> {
+@NoRepositoryBean
+public interface EmployeeRepository extends ListCrudRepository<Employee, String> {
 }
+
+

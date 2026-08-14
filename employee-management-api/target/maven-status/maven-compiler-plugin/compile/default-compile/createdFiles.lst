@@ -1,6 +1,12 @@
 net/dixonai/employeemanagement/controller/EmployeeController.class
 net/dixonai/employeemanagement/repository/EmployeeRepository.class
 net/dixonai/employeemanagement/service/EmployeeService.class
+net/dixonai/employeemanagement/repository/JpaEmployeeRepository.class
 net/dixonai/employeemanagement/controller/WelcomeController.class
-net/dixonai/employeemanagement/model/Employee.class
+net/dixonai/employeemanagement/exception/GlobalExceptionHandler.class
 net/dixonai/employeemanagement/EmployeeManagementApiApplication.class
+net/dixonai/employeemanagement/config/DataConfig$MongoDataConfig.class
+net/dixonai/employeemanagement/config/DataConfig$JpaDataConfig.class
+net/dixonai/employeemanagement/repository/MongoEmployeeRepository.class
+net/dixonai/employeemanagement/model/Employee.class
+net/dixonai/employeemanagement/config/DataConfig.class
