@@ -6,6 +6,7 @@ import net.dixonai.employeemanagement.repository.EmployeeRepository;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 public class EmployeeService {
@@ -17,6 +18,9 @@ public class EmployeeService {
     }
 
     public Employee createEmployee(Employee employee) {
+        if (employee.getId() == null || employee.getId().trim().isEmpty()) {
+            employee.setId(UUID.randomUUID().toString());
+        }
         return employeeRepository.save(employee);
     }
 

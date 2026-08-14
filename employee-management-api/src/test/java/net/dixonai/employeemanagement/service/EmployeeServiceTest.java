@@ -47,6 +47,20 @@ class EmployeeServiceTest {
     }
 
     @Test
+    void createEmployee_WhenIdIsNull_ShouldGenerateUUIDAndSave() {
+        Employee newEmp = new Employee(null, "Alice", "Smith", "alice.smith@example.com", "Design");
+        when(employeeRepository.save(any(Employee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Employee created = employeeService.createEmployee(newEmp);
+
+        assertNotNull(created);
+        assertNotNull(created.getId());
+        assertFalse(created.getId().trim().isEmpty());
+        assertEquals("Alice", created.getFirstName());
+        verify(employeeRepository, times(1)).save(newEmp);
+    }
+
+    @Test
     void getAllEmployees_ShouldReturnListOfEmployees() {
         when(employeeRepository.findAll()).thenReturn(Arrays.asList(employee1, employee2));
 
