@@ -3,11 +3,13 @@ package com.example.employeemanagement.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import com.example.employeemanagement.model.Employee;
 import com.example.employeemanagement.service.EmployeeService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController {
