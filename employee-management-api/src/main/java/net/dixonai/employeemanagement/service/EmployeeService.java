@@ -1,9 +1,8 @@
-package com.example.employeemanagement.service;
+package net.dixonai.employeemanagement.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.example.employeemanagement.model.Employee;
-import com.example.employeemanagement.repository.EmployeeRepository;
+import net.dixonai.employeemanagement.model.Employee;
+import net.dixonai.employeemanagement.repository.EmployeeRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,8 +10,11 @@ import java.util.Optional;
 @Service
 public class EmployeeService {
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
+
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     public Employee createEmployee(Employee employee) {
         return employeeRepository.save(employee);

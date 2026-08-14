@@ -1,4 +1,4 @@
-package com.example.employeemanagement.model;
+package net.dixonai.employeemanagement.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
