@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,6 +20,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping({"/auth", "/api/auth"})
 public class AuthController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     private final EmployeeRepository employeeRepository;
     private final PasswordEncryptionService passwordEncryptionService;
@@ -38,15 +43,19 @@ public class AuthController {
                     .body(Map.of("message", "Email address and password are required"));
         }
 
-        Optional<Employee> employeeOpt = employeeRepository.findByEmailId(loginRequest.getEmailId().trim());
+        String inputEmail = loginRequest.getEmailId().trim();
+        logger.info("Processing login request for email: {}", inputEmail);
+
+        Optional<Employee> employeeOpt = employeeRepository.findByEmailId(inputEmail);
 
         if (employeeOpt.isEmpty()) {
             employeeOpt = employeeRepository.findAll().stream()
-                    .filter(e -> e.getEmailId() != null && e.getEmailId().equalsIgnoreCase(loginRequest.getEmailId().trim()))
+                    .filter(e -> e.getEmailId() != null && e.getEmailId().trim().equalsIgnoreCase(inputEmail))
                     .findFirst();
         }
 
         if (employeeOpt.isEmpty()) {
+            logger.warn("Login failed: No employee record found for email: {}", inputEmail);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid email address or password"));
         }
@@ -54,14 +63,19 @@ public class AuthController {
         Employee employee = employeeOpt.get();
 
         if (!employee.isLoginEnabled()) {
+            logger.warn("Login failed: System login is disabled for email: {}", inputEmail);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "System login is disabled for this account"));
         }
 
         if (employee.getPassword() == null || !passwordEncryptionService.matches(loginRequest.getPassword(), employee.getPassword())) {
+            logger.warn("Login failed: Password mismatch for email: {}", inputEmail);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(Map.of("message", "Invalid email address or password"));
         }
+
+        logger.info("Login successful for email: {}", inputEmail);
+
 
 
         String token = tokenProvider.generateToken(employee.getEmailId(), employee.getId(), employee.getDepartment());

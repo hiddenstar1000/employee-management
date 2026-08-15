@@ -1,5 +1,7 @@
 package net.dixonai.employeemanagement.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import net.dixonai.employeemanagement.model.Employee;
 import net.dixonai.employeemanagement.repository.EmployeeRepository;
@@ -10,6 +12,8 @@ import java.util.UUID;
 
 @Service
 public class EmployeeService {
+
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
     private final EmployeeRepository employeeRepository;
     private final PasswordEncryptionService passwordEncryptionService;
@@ -24,6 +28,7 @@ public class EmployeeService {
             employee.setId(UUID.randomUUID().toString());
         }
 
+        logger.debug("Processing employee creation for id={}", employee.getId());
         processPassword(employee, employee.getPassword());
         return employeeRepository.save(employee);
     }
@@ -56,11 +61,13 @@ public class EmployeeService {
                         existingEmployee.setPassword(null);
                     }
 
+                    logger.debug("Saving updated employee id={}", id);
                     return employeeRepository.save(existingEmployee);
                 }).orElseThrow(() -> new RuntimeException("Employee not found with id " + id));
     }
 
     public void deleteEmployee(String id) {
+        logger.debug("Executing repository delete for id={}", id);
         employeeRepository.deleteById(id);
     }
 
@@ -82,4 +89,5 @@ public class EmployeeService {
         return password;
     }
 }
+
 

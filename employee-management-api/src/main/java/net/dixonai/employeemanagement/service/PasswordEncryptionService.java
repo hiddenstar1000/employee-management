@@ -104,7 +104,11 @@ public class PasswordEncryptionService {
             return rawPassword.equals(encryptedPassword);
         }
         String decrypted = decrypt(encryptedPassword);
+        if (decrypted == null) {
+            return rawPassword.equals(encryptedPassword);
+        }
         return rawPassword.equals(decrypted);
     }
+
 }
 
