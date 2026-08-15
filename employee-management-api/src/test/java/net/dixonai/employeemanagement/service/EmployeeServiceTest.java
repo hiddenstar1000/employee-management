@@ -23,6 +23,9 @@ class EmployeeServiceTest {
     @Mock
     private EmployeeRepository employeeRepository;
 
+    @Mock
+    private PasswordEncryptionService passwordEncryptionService;
+
     @InjectMocks
     private EmployeeService employeeService;
 
@@ -44,6 +47,32 @@ class EmployeeServiceTest {
         assertNotNull(created);
         assertEquals("John", created.getFirstName());
         verify(employeeRepository, times(1)).save(employee1);
+    }
+
+    @Test
+    void createEmployee_WhenLoginEnabled_ShouldEncryptPassword() {
+        Employee loginEmp = new Employee(null, "Alice", "Smith", "alice@example.com", "Engineering", true, "plainPass123");
+        when(passwordEncryptionService.encrypt("plainPass123")).thenReturn("ENC_GCM_v1:encryptedString");
+        when(employeeRepository.save(any(Employee.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Employee created = employeeService.createEmployee(loginEmp);
+
+        assertNotNull(created);
+        assertTrue(created.isLoginEnabled());
+        assertEquals("ENC_GCM_v1:encryptedString", created.getPassword());
+        verify(passwordEncryptionService, times(1)).encrypt("plainPass123");
+        verify(employeeRepository, times(1)).save(loginEmp);
+    }
+
+    @Test
+    void createEmployee_WhenLoginEnabledAndPasswordNull_ShouldThrowException() {
+        Employee loginEmp = new Employee(null, "Alice", "Smith", "alice@example.com", "Engineering", true, null);
+
+        IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () ->
+                employeeService.createEmployee(loginEmp));
+
+        assertEquals("Password is required when login is enabled", ex.getMessage());
+        verify(employeeRepository, never()).save(any());
     }
 
     @Test
@@ -128,3 +157,4 @@ class EmployeeServiceTest {
         verify(employeeRepository, times(1)).deleteById("1");
     }
 }
+

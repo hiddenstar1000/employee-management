@@ -64,4 +64,16 @@ class EmployeeRepositoryTest {
         Optional<Employee> found = employeeRepository.findById("emp-5");
         assertFalse(found.isPresent());
     }
+
+    @Test
+    void findByEmailId_ShouldReturnEmployeeFromH2Database() {
+        Employee employee = new Employee("emp-6", "Frank", "Castle", "frank@example.com", "Security");
+        employeeRepository.save(employee);
+
+        Optional<Employee> found = employeeRepository.findByEmailId("frank@example.com");
+
+        assertTrue(found.isPresent());
+        assertEquals("Frank", found.get().getFirstName());
+    }
 }
+

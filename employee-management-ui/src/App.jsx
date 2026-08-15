@@ -3,9 +3,16 @@ import { Plus, Loader2 } from 'lucide-react';
 import Layout from './components/Layout';
 import EmployeeList from './components/EmployeeList';
 import EmployeeFormModal from './components/EmployeeFormModal';
+import Login from './components/Login';
 import { getEmployees, createEmployee, updateEmployee, deleteEmployee } from './services/api';
 
 function App() {
+  const [token, setToken] = useState(() => localStorage.getItem('token'));
+  const [currentUser, setCurrentUser] = useState(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
   const [employees, setEmployees] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -15,6 +22,7 @@ function App() {
   const [editingEmployee, setEditingEmployee] = useState(null);
 
   const fetchEmployees = async () => {
+    if (!token) return;
     try {
       setLoading(true);
       const response = await getEmployees();
@@ -22,15 +30,39 @@ function App() {
       setError(null);
     } catch (err) {
       console.error('Error fetching employees:', err);
-      setError('Failed to load employees. Please ensure the backend is running.');
+      setError('Failed to load employees. Please ensure the backend is running and you are authenticated.');
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchEmployees();
+    const handleUnauthorized = () => {
+      setToken(null);
+      setCurrentUser(null);
+    };
+
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth-unauthorized', handleUnauthorized);
   }, []);
+
+  useEffect(() => {
+    if (token) {
+      fetchEmployees();
+    }
+  }, [token]);
+
+  const handleLoginSuccess = ({ token: newToken, employee }) => {
+    setToken(newToken);
+    setCurrentUser(employee);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('currentUser');
+    setToken(null);
+    setCurrentUser(null);
+  };
 
   const handleOpenModal = (employee = null) => {
     setEditingEmployee(employee);
@@ -69,8 +101,12 @@ function App() {
     }
   };
 
+  if (!token) {
+    return <Login onLoginSuccess={handleLoginSuccess} />;
+  }
+
   return (
-    <Layout>
+    <Layout currentUser={currentUser} onLogout={handleLogout}>
       <div className="sm:flex sm:items-center sm:justify-between mb-8">
         <div>
           <h2 className="text-2xl font-bold text-surface-900">Team Members</h2>
@@ -119,3 +155,4 @@ function App() {
 }
 
 export default App;
+

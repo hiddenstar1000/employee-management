@@ -43,6 +43,11 @@ graph TD
 ## Key Features
 
 - **Full-Stack CRUD Operations**: Create, read, update, and delete employee records seamlessly from the frontend UI or directly via REST endpoints.
+- **Spring Security & JWT Authentication**:
+  - Stateless API authentication using Spring Security filter chain and signed JWT tokens (`Authorization: Bearer <token>`).
+  - Account-level login toggle (`loginEnabled`) and password requirement validation.
+  - UI authentication gate: Full system UI is locked behind a modern glassmorphic Login screen.
+- **AES-256-GCM Password Encryption**: Strong symmetric encryption for stored employee passwords using AES-256-GCM with secret key configured via `ENCRYPTION_SECRET_KEY` in `.env`.
 - **Dual Database Persistence Model**:
   - **Runtime Application**: Operates on **Spring Data MongoDB** using connection settings specified in `.env`.
   - **Automated Test Suite**: Executes 100% offline using **Spring Data JPA** and an in-memory **H2 Database** (`jdbc:h2:mem:employeedb`).
@@ -68,16 +73,16 @@ employee-management/
 │   └── terraform.tfvars.example   # Example Variables Template
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
-│   ├── .env                       # Environment Variables (MONGODB_URI, PORT)
+│   ├── .env                       # Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
 │   ├── README.md                  # Comprehensive API Documentation
-│   └── src/                       # Application & Test Source Code
+│   └── src/                       # Security, Controllers, Services & Tests
 └── employee-management-ui/        # React + Vite Frontend Project
     ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
     ├── package.json               # NPM Dependencies & Scripts
     ├── vite.config.js             # Vite Proxy & Server Settings
     ├── README.md                  # Comprehensive UI Documentation
-    └── src/                       # Components, Services & Assets
+    └── src/                       # Login, Layout, List & Form Modal Components
 ```
 
 ---
@@ -194,7 +199,7 @@ Open your browser and navigate to **`http://localhost:5173`**.
 
 ## Running Automated Tests
 
-Run the complete 20-case automated unit and integration test suite across API controllers, services, and repositories:
+Run the complete 27-case automated unit and integration test suite across API controllers, security, services, and repositories:
 
 ```bash
 cd employee-management-api
@@ -205,14 +210,16 @@ mvn clean test
 
 ## API Reference Overview
 
-| Method | Endpoint | Description | Request Body |
-| :--- | :--- | :--- | :--- |
-| `GET` | `/` | API Status & Health Check | None |
-| `GET` | `/employees` | Retrieve all employees | None |
-| `POST` | `/employees` | Create a new employee (Auto UUID if `id` omitted) | Employee JSON |
-| `GET` | `/employees/{id}` | Retrieve employee by ID | None |
-| `PUT` | `/employees/{id}` | Update existing employee details | Employee JSON |
-| `DELETE` | `/employees/{id}` | Delete employee by ID | None |
+| Method | Endpoint | Access | Description | Request Body |
+| :--- | :--- | :--- | :--- | :--- |
+| `GET` | `/` | Public | API Status & Health Check | None |
+| `POST` | `/auth/login` | Public | System Authentication & JWT Token Issuance | `{ "emailId", "password" }` |
+| `GET` | `/employees` | Authenticated (`Bearer`) | Retrieve all employees | None |
+| `POST` | `/employees` | Authenticated (`Bearer`) | Create a new employee (Auto UUID if `id` omitted) | Employee JSON |
+| `GET` | `/employees/{id}` | Authenticated (`Bearer`) | Retrieve employee by ID | None |
+| `PUT` | `/employees/{id}` | Authenticated (`Bearer`) | Update existing employee details | Employee JSON |
+| `DELETE` | `/employees/{id}` | Authenticated (`Bearer`) | Delete employee by ID | None |
+
 
 ---
 

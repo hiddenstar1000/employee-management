@@ -1,5 +1,6 @@
 package net.dixonai.employeemanagement.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -17,16 +18,26 @@ public class Employee {
     private String lastName;
     private String emailId;
     private String department;
+    private boolean loginEnabled = false;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String password;
 
     public Employee() {
     }
 
     public Employee(String id, String firstName, String lastName, String emailId, String department) {
+        this(id, firstName, lastName, emailId, department, false, null);
+    }
+
+    public Employee(String id, String firstName, String lastName, String emailId, String department, boolean loginEnabled, String password) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.emailId = emailId;
         this.department = department;
+        this.loginEnabled = loginEnabled;
+        this.password = password;
     }
 
     public String getId() {
@@ -68,4 +79,21 @@ public class Employee {
     public void setDepartment(String department) {
         this.department = department;
     }
+
+    public boolean isLoginEnabled() {
+        return loginEnabled;
+    }
+
+    public void setLoginEnabled(boolean loginEnabled) {
+        this.loginEnabled = loginEnabled;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 }
+
