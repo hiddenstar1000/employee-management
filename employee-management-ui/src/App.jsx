@@ -18,7 +18,7 @@ function App() {
     try {
       setLoading(true);
       const response = await getEmployees();
-      setEmployees(response.data);
+      setEmployees(Array.isArray(response.data) ? response.data : []);
       setError(null);
     } catch (err) {
       console.error('Error fetching employees:', err);

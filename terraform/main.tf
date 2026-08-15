@@ -273,9 +273,9 @@ resource "kubernetes_ingress_v1" "app_ingress" {
     namespace = kubernetes_namespace.app_ns.metadata[0].name
 
     annotations = {
-      "kubernetes.io/ingress.class"                = var.ingress_class_name
-      "nginx.ingress.kubernetes.io/ssl-redirect"  = "false"
-      "nginx.ingress.kubernetes.io/use-regex"     = "true"
+      "kubernetes.io/ingress.class"              = var.ingress_class_name
+      "nginx.ingress.kubernetes.io/ssl-redirect" = "false"
+      "nginx.ingress.kubernetes.io/use-regex"    = "true"
     }
   }
 

@@ -67,11 +67,13 @@ employee-management/
 │   ├── outputs.tf                 # Output Endpoints & Service Names
 │   └── terraform.tfvars.example   # Example Variables Template
 ├── employee-management-api/       # Spring Boot Backend API Project
+│   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
 │   ├── .env                       # Environment Variables (MONGODB_URI, PORT)
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
 │   ├── README.md                  # Comprehensive API Documentation
 │   └── src/                       # Application & Test Source Code
 └── employee-management-ui/        # React + Vite Frontend Project
+    ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
     ├── package.json               # NPM Dependencies & Scripts
     ├── vite.config.js             # Vite Proxy & Server Settings
     ├── README.md                  # Comprehensive UI Documentation
@@ -90,30 +92,51 @@ Deploy the application to your **Rancher / Kubernetes Cluster** as illustrated i
 - **Kubectl / Kubeconfig**: Authenticated access to your Rancher cluster (`~/.kube/config`).
 - **Nginx Ingress Controller**: Installed on your Rancher cluster.
 
-### Deployment Steps
+---
 
-1. **Navigate to the terraform directory**:
-   ```bash
-   cd terraform
-   ```
+### Step 1: Build Container Images (Local Rancher or Remote Registry)
 
-2. **Create variable configuration file**:
-   ```bash
-   cp terraform.tfvars.example terraform.tfvars
-   ```
-   Edit `terraform.tfvars` to supply your **MongoDB Atlas Connection URI** (`mongodb_uri`), container images, and cluster settings.
+#### Option A: Local Rancher (No Docker Hub push required)
+If you are running **Rancher Desktop** (with Docker / containerd runtime):
+```bash
+# Build API image locally
+docker build -t employee-management-api:latest ./employee-management-api
 
-3. **Initialize & Apply Terraform**:
-   ```bash
-   # Initialize Terraform provider
-   terraform init
+# Build UI image locally
+docker build -t employee-management-ui:latest ./employee-management-ui
+```
+Because the Terraform configuration sets `image_pull_policy = "IfNotPresent"`, Kubernetes will use your locally built images directly.
 
-   # Preview resources to be created
-   terraform plan
+#### Option B: Push to Docker Hub or Registry (For remote Rancher clusters)
+```bash
+# Tag and push API image
+docker build -t <your-username>/employee-management-api:latest ./employee-management-api
+docker push <your-username>/employee-management-api:latest
 
-   # Apply deployment to Rancher / Kubernetes cluster
-   terraform apply
-   ```
+# Tag and push UI image
+docker build -t <your-username>/employee-management-ui:latest ./employee-management-ui
+docker push <your-username>/employee-management-ui:latest
+```
+
+---
+
+### Step 2: Apply Terraform Configuration
+
+```bash
+cd terraform
+
+# Create variable file
+cp terraform.tfvars.example terraform.tfvars
+```
+
+Update `terraform.tfvars` with your settings (e.g. `api_image`, `ui_image`, `mongodb_uri`).
+
+```bash
+# Initialize & apply
+terraform init
+terraform plan
+terraform apply
+```
 
 This provisions:
 - Namespace `employee-management`
