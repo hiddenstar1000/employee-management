@@ -4,7 +4,19 @@ A full-stack, enterprise-grade Employee Management Application consisting of a *
 
 ---
 
-## Architecture Overview
+## Architecture & Deployment
+
+![Employee Management System: Rancher & MongoDB Atlas Architecture](docs/images/deployment-architecture.jpg)
+
+### Production Deployment Architecture
+- **Cluster Platform**: Hosted on a **Rancher / Kubernetes Cluster** managing containerized workloads.
+- **Ingress Routing**:
+  - `/` routes browser traffic directly to the **React Frontend** pod.
+  - `/api/*` proxies API requests to the **Spring Boot API** pod.
+- **Inter-Service Communication**: React SPA uses relative `/api` paths, allowing seamless proxying by the Ingress Controller.
+- **Cloud Data Persistence**: Spring Boot REST API connects to **MongoDB Atlas** (Fully Managed Cloud DB) with credentials securely supplied via Secret Injection.
+
+### Local Development Flow
 
 ```mermaid
 graph TD
@@ -45,6 +57,9 @@ graph TD
 ```text
 employee-management/
 ├── README.md                      # Workspace Root Documentation (This File)
+├── docs/                          # Project Architecture & Media Assets
+│   └── images/
+│       └── deployment-architecture.jpg  # Rancher & MongoDB Atlas Architecture Diagram
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── .env                       # Environment Variables (MONGODB_URI, PORT)
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
