@@ -9,7 +9,6 @@
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/exception/GlobalExceptionHandler.java
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/model/Employee.java
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/repository/EmployeeRepository.java
-/Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/repository/JpaEmployeeRepository.java
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/repository/MongoEmployeeRepository.java
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/security/JwtAuthenticationFilter.java
 /Users/dixon/Projects/Personal/Dixon AI/employee-management/employee-management-api/src/main/java/net/dixonai/employeemanagement/security/JwtTokenProvider.java

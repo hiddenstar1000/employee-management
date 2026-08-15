@@ -2,13 +2,11 @@
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 WORKDIR /app
 
-# Copy pom.xml and download dependencies
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-
 # Copy source code and build executable jar
+COPY pom.xml .
 COPY src ./src
-RUN mvn package -DskipTests -B
+RUN mvn clean package -DskipTests -B
+
 
 # Stage 2: Runtime Container
 FROM eclipse-temurin:21-jre-alpine

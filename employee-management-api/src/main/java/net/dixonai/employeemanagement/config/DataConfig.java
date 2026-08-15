@@ -2,21 +2,11 @@ package net.dixonai.employeemanagement.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
 @Configuration
+@Profile("!test")
+@EnableMongoRepositories(basePackages = "net.dixonai.employeemanagement.repository")
 public class DataConfig {
-
-    @Configuration
-    @Profile("test")
-    @EnableJpaRepositories(basePackages = "net.dixonai.employeemanagement.repository")
-    static class JpaDataConfig {
-    }
-
-    @Configuration
-    @Profile("!test")
-    @EnableMongoRepositories(basePackages = "net.dixonai.employeemanagement.repository")
-    static class MongoDataConfig {
-    }
 }
+

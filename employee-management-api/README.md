@@ -182,17 +182,22 @@ The application will start on `http://localhost:8080`.
 
 ## Testing
 
-Run all 27 unit and integration tests using Maven:
+Run all 36 unit and integration tests using Maven:
 ```bash
 mvn clean test
 ```
 
 ### Test Coverage Summary:
+- **`JwtTokenProviderTest`**: Tests JWT token generation, claim payload validation, and expiration parsing.
+- **`JwtAuthenticationFilterTest`**: Tests HTTP Authorization header extraction and SecurityContext authentication.
 - **`AuthControllerTest`**: Verifies login authentication, JWT token issuance, invalid passwords, and disabled login accounts.
 - **`EmployeeServiceTest`**: Unit tests for business logic, CRUD, AES-256-GCM encryption, and automatic UUID generation.
+- **`PasswordEncryptionServiceTest`**: Tests AES-256-GCM symmetric encryption, decryption, and password matching.
+- **`GlobalExceptionHandlerTest`**: Tests MongoException error handling and 503 Service Unavailable responses.
 - **`EmployeeControllerTest`**: MockMvc controller tests for HTTP status codes and JSON responses.
 - **`WelcomeControllerTest`**: Unit test for root status endpoint.
 - **`EmployeeRepositoryTest`**: Integration tests against H2 in-memory database using `@DataJpaTest` and `@ActiveProfiles("test")`.
+
 
 ---
 

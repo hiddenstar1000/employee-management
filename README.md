@@ -199,7 +199,7 @@ Open your browser and navigate to **`http://localhost:5173`**.
 
 ## Running Automated Tests
 
-Run the complete 27-case automated unit and integration test suite across API controllers, security, services, and repositories:
+- **Automated Testing Suite**: 36 comprehensive test cases covering security filters, JWT token providers, controllers, services, global exception handling, and Spring Data JPA/H2 repositories (`mvn clean test`).
 
 ```bash
 cd employee-management-api

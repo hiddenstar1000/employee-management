@@ -17,7 +17,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class EmployeeRepositoryTest {
 
     @Autowired
-    private JpaEmployeeRepository employeeRepository;
+    private EmployeeRepository employeeRepository;
+
 
     @Test
     void save_ShouldPersistEmployeeToH2Database() {
