@@ -60,6 +60,12 @@ employee-management/
 ├── docs/                          # Project Architecture & Media Assets
 │   └── images/
 │       └── deployment-architecture.jpg  # Rancher & MongoDB Atlas Architecture Diagram
+├── terraform/                     # Rancher & Kubernetes Terraform Deployment IaC
+│   ├── providers.tf               # Kubernetes Provider Definition
+│   ├── variables.tf               # Input Variables (Replicas, Images, MongoDB URI)
+│   ├── main.tf                    # Namespace, Deployments, Services, Secret & Ingress
+│   ├── outputs.tf                 # Output Endpoints & Service Names
+│   └── terraform.tfvars.example   # Example Variables Template
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── .env                       # Environment Variables (MONGODB_URI, PORT)
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
@@ -71,6 +77,52 @@ employee-management/
     ├── README.md                  # Comprehensive UI Documentation
     └── src/                       # Components, Services & Assets
 ```
+
+---
+
+## Rancher / Kubernetes Deployment (Terraform)
+
+Deploy the application to your **Rancher / Kubernetes Cluster** as illustrated in the architecture diagram:
+
+### Prerequisites
+
+- **Terraform CLI**: `>= 1.3.0`
+- **Kubectl / Kubeconfig**: Authenticated access to your Rancher cluster (`~/.kube/config`).
+- **Nginx Ingress Controller**: Installed on your Rancher cluster.
+
+### Deployment Steps
+
+1. **Navigate to the terraform directory**:
+   ```bash
+   cd terraform
+   ```
+
+2. **Create variable configuration file**:
+   ```bash
+   cp terraform.tfvars.example terraform.tfvars
+   ```
+   Edit `terraform.tfvars` to supply your **MongoDB Atlas Connection URI** (`mongodb_uri`), container images, and cluster settings.
+
+3. **Initialize & Apply Terraform**:
+   ```bash
+   # Initialize Terraform provider
+   terraform init
+
+   # Preview resources to be created
+   terraform plan
+
+   # Apply deployment to Rancher / Kubernetes cluster
+   terraform apply
+   ```
+
+This provisions:
+- Namespace `employee-management`
+- Kubernetes Secret `mongodb-atlas-secret` with your Atlas URI
+- Spring Boot REST API Deployment & Service (Port 8080)
+- React SPA Frontend Deployment & Service (Port 80)
+- Nginx Ingress Controller routing `/` to Frontend and `/api/*` to Backend API
+
+---
 
 ---
 
