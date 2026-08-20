@@ -8,6 +8,7 @@ on:
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    environment: PROD
     permissions:
       contents: read
       packages: write
@@ -23,6 +24,14 @@ jobs:
           distribution: 'temurin'
           cache: maven
           cache-dependency-path: 'employee-management-api/pom.xml'
+
+      - name: Create .env file for API
+        run: |
+          cat <<EOF > employee-management-api/.env
+          MONGODB_URI=${{ secrets.MONGODB_URI }}
+          PORT=${{ secrets.PORT || '8080' }}
+          ENCRYPTION_SECRET_KEY=${{ secrets.ENCRYPTION_SECRET_KEY }}
+          EOF
 
       - name: Build API JAR with Maven
         run: |
