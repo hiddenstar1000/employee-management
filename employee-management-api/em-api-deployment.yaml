@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: spring-boot-api
-          image: employee-management-api:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/hiddenstar1000/employee-management-api:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http

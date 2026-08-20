@@ -23,8 +23,8 @@ spec:
     spec:
       containers:
         - name: react-frontend
-          image: employee-management-ui:latest
-          imagePullPolicy: IfNotPresent
+          image: ghcr.io/hiddenstar1000/employee-management-ui:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
               name: http
