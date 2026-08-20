@@ -1,10 +1,62 @@
-env:
-  - name: JAVA_OPTS
-    value: "-XX:MaxRAMPercentage=75.0"
-resources:
-  requests:
-    memory: "768Mi"
-    cpu: "500m"     # Half a CPU core
-  limits:
-    memory: "1.5Gi" # Safe ceiling for Spring Boot
-    cpu: "1000m"    # 1 full CPU core for fast startups
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: spring-boot-api
+  namespace: app-em-test
+  labels:
+    app: employee-management
+    component: api
+    tier: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-management
+      component: api
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: employee-management
+        component: api
+        tier: backend
+    spec:
+      containers:
+        - name: spring-boot-api
+          image: employee-management-api:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: JAVA_OPTS
+              value: "-XX:MaxRAMPercentage=75.0"
+            - name: MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-atlas-secret
+                  key: MONGODB_URI
+            - name: SPRING_DATA_MONGODB_URI
+              valueFrom:
+                secretKeyRef:
+                  name: mongodb-atlas-secret
+                  key: MONGODB_URI
+          resources:
+            requests:
+              memory: "768Mi"
+              cpu: "500m"     # Half a CPU core
+            limits:
+              memory: "1.5Gi" # Safe ceiling for Spring Boot
+              cpu: "1000m"    # 1 full CPU core for fast startups
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 15
+            periodSeconds: 5

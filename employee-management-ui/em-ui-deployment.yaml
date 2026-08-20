@@ -1,7 +1,49 @@
-resources:
-  requests:
-    memory: "64Mi"
-    cpu: "100m"     # 1/10th of a core
-  limits:
-    memory: "256Mi"
-    cpu: "250m"     # 1/4th of a core
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: react-frontend
+  namespace: app-em-test
+  labels:
+    app: employee-management
+    component: ui
+    tier: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: employee-management
+      component: ui
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: employee-management
+        component: ui
+        tier: frontend
+    spec:
+      containers:
+        - name: react-frontend
+          image: employee-management-ui:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              memory: "64Mi"
+              cpu: "100m"     # 1/10th of a core
+            limits:
+              memory: "256Mi"
+              cpu: "250m"     # 1/4th of a core
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
