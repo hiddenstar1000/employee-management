@@ -79,6 +79,7 @@ employee-management/
 └── employee-management-ui/        # React + Vite Frontend Project
     ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
     ├── em-ui-deployment.yaml      # Kubernetes Deployment & Service Manifest
+    ├── em-ingress.yaml            # Kubernetes Ingress Subdomain Routing Manifest
     ├── .env                       # Local Environment Variables (VITE_API_URL)
     ├── .env-example               # Example Environment Variables Template
     ├── package.json               # NPM Dependencies & Scripts
