@@ -62,6 +62,9 @@ graph TD
 ```text
 employee-management/
 ├── README.md                      # Workspace Root Documentation (This File)
+├── .github/                       # GitHub Workflows & Automation
+│   └── workflows/
+│       └── publish-ghcr.yaml      # Automated Docker Build & GHCR Publish Pipeline
 ├── docs/                          # Project Architecture & Media Assets
 │   └── images/
 │       └── deployment-architecture.jpg  # Rancher & MongoDB Atlas Architecture Diagram
@@ -73,12 +76,15 @@ employee-management/
 │   └── terraform.tfvars.example   # Example Variables Template
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
-│   ├── .env                       # Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
+│   ├── .env                       # Local Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
+│   ├── .env-example               # Example Environment Variables Template
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
 │   ├── README.md                  # Comprehensive API Documentation
 │   └── src/                       # Security, Controllers, Services & Tests
 └── employee-management-ui/        # React + Vite Frontend Project
     ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
+    ├── .env                       # Local Environment Variables (VITE_API_URL)
+    ├── .env-example               # Example Environment Variables Template
     ├── package.json               # NPM Dependencies & Scripts
     ├── vite.config.js             # Vite Proxy & Server Settings
     ├── README.md                  # Comprehensive UI Documentation
@@ -170,6 +176,9 @@ This provisions:
 ```bash
 cd employee-management-api
 
+# Create local environment configuration from template
+cp .env-example .env
+
 # Compile the Spring Boot API
 mvn clean compile
 
@@ -185,6 +194,9 @@ Open a separate terminal window:
 
 ```bash
 cd employee-management-ui
+
+# Create local environment configuration from template
+cp .env-example .env
 
 # Install dependencies
 npm install

@@ -99,7 +99,13 @@ employee-management-api/
 
 ### Environment Setup
 
-Create a `.env` file in `employee-management-api/`:
+Copy `.env-example` to create your local `.env` file in `employee-management-api/`:
+
+```bash
+cp .env-example .env
+```
+
+Environment variables configured in `.env`:
 
 ```env
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/employee-management?retryWrites=true&w=majority&serverSelectionTimeoutMS=5000

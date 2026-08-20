@@ -52,9 +52,17 @@ jobs:
           push: true
           tags: ghcr.io/hiddenstar1000/employee-management-api:latest
 
+      - name: Create .env file for UI
+        run: |
+          cat <<EOF > employee-management-ui/.env
+          VITE_API_URL=${{ secrets.VITE_API_URL }}
+          EOF
+
       - name: Build and Push UI Docker Image
         uses: docker/build-push-action@v6
         with:
           context: ./employee-management-ui
           push: true
           tags: ghcr.io/hiddenstar1000/employee-management-ui:latest
+          build-args: |
+            VITE_API_URL=${{ secrets.VITE_API_URL }}

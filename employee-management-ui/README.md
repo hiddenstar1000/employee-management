@@ -37,6 +37,8 @@ A modern, responsive React single-page application (SPA) built with Vite, Tailwi
 
 ```text
 employee-management-ui/
+├── .env                       # Local Environment Variables (VITE_API_URL)
+├── .env-example               # Example Environment Variables Template
 ├── index.html
 ├── package.json
 ├── postcss.config.js
@@ -60,9 +62,12 @@ employee-management-ui/
 
 ## API & Reverse Proxy Architecture
 
-The frontend uses a centralized Axios client in [`src/services/api.js`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-ui/src/services/api.js) configured with `baseURL: '/api'`.
+The frontend uses a centralized Axios client in [`src/services/api.js`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-ui/src/services/api.js) configured with `baseURL: import.meta.env.VITE_API_URL || '/api'`.
 
-In development, Vite proxies all `/api/*` requests to the Spring Boot backend (`http://localhost:8080`) and strips the `/api` prefix using the rewrite rule in [`vite.config.js`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-ui/vite.config.js):
+- **Local Development**: Configured via `.env` (`VITE_API_URL=http://localhost:8080/api`) or proxied through Vite (`vite.config.js`).
+- **Production / Docker**: Passed as a build argument (`ARG VITE_API_URL`) or GitHub Secret (`VITE_API_URL`) during container creation.
+
+In development, Vite proxies `/api/*` requests to the Spring Boot backend (`http://localhost:8080`) and strips the `/api` prefix:
 
 | Frontend Request | Vite Proxy Target | Backend Endpoint Received | Auth Required |
 | :--- | :--- | :--- | :--- |
@@ -89,12 +94,17 @@ In development, Vite proxies all `/api/*` requests to the Spring Boot backend (`
    cd employee-management-ui
    ```
 
-2. **Install dependencies**:
+2. **Create local environment configuration**:
+   ```bash
+   cp .env-example .env
+   ```
+
+3. **Install dependencies**:
    ```bash
    npm install
    ```
 
-3. **Start Development Server**:
+4. **Start Development Server**:
    ```bash
    npm run dev
    ```
