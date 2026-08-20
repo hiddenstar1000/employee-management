@@ -66,3 +66,35 @@ jobs:
           tags: ghcr.io/hiddenstar1000/employee-management-ui:latest
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
+
+      - name: Set up Kubeconfig
+        if: ${{ secrets.KUBECONFIG != '' }}
+        uses: azure/k8s-set-context@v4
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBECONFIG }}
+
+      - name: Deploy Kubernetes Secret from GitHub Secrets
+        if: ${{ secrets.KUBECONFIG != '' }}
+        run: |
+          kubectl create secret generic mongodb-atlas-secret \
+            --from-literal=MONGODB_URI="${{ secrets.MONGODB_URI }}" \
+            --from-literal=ENCRYPTION_SECRET_KEY="${{ secrets.ENCRYPTION_SECRET_KEY }}" \
+            --namespace=app-em-test \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy GHCR Docker Registry Secret
+        if: ${{ secrets.KUBECONFIG != '' }}
+        run: |
+          kubectl create secret docker-registry ghcr-secret \
+            --docker-server=ghcr.io \
+            --docker-username=hiddenstar1000 \
+            --docker-password="${{ secrets.GH_PAT }}" \
+            --namespace=app-em-test \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Deploy Kubernetes Manifests
+        if: ${{ secrets.KUBECONFIG != '' }}
+        run: |
+          kubectl apply -f employee-management-api/em-api-deployment.yaml
+          kubectl apply -f employee-management-ui/em-ui-deployment.yaml
