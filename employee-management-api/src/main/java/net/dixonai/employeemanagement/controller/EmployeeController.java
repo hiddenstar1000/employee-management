@@ -12,7 +12,7 @@ import net.dixonai.employeemanagement.service.EmployeeService;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/employees")
+@RequestMapping({"/employees", "/api/employees"})
 public class EmployeeController {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
