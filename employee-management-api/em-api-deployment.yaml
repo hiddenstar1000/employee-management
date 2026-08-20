@@ -1,3 +1,6 @@
+env:
+  - name: JAVA_OPTS
+    value: "-XX:MaxRAMPercentage=75.0"
 resources:
   requests:
     memory: "768Mi"
