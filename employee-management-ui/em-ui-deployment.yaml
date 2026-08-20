@@ -24,7 +24,7 @@ spec:
       containers:
         - name: react-frontend
           image: employee-management-ui:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Never
           ports:
             - containerPort: 80
               name: http
