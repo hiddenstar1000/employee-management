@@ -64,18 +64,13 @@ employee-management/
 ├── README.md                      # Workspace Root Documentation (This File)
 ├── .github/                       # GitHub Workflows & Automation
 │   └── workflows/
-│       └── publish-ghcr.yaml      # Automated Docker Build & GHCR Publish Pipeline
+│       └── publish-ghcr.yaml      # Automated Docker Build, GHCR Publish & K8s Deploy Pipeline
 ├── docs/                          # Project Architecture & Media Assets
 │   └── images/
 │       └── deployment-architecture.jpg  # Rancher & MongoDB Atlas Architecture Diagram
-├── terraform/                     # Rancher & Kubernetes Terraform Deployment IaC
-│   ├── providers.tf               # Kubernetes Provider Definition
-│   ├── variables.tf               # Input Variables (Replicas, Images, MongoDB URI)
-│   ├── main.tf                    # Namespace, Deployments, Services, Secret & Ingress
-│   ├── outputs.tf                 # Output Endpoints & Service Names
-│   └── terraform.tfvars.example   # Example Variables Template
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
+│   ├── em-api-deployment.yaml     # Kubernetes Deployment & Service Manifest
 │   ├── .env                       # Local Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
 │   ├── .env-example               # Example Environment Variables Template
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
@@ -83,6 +78,7 @@ employee-management/
 │   └── src/                       # Security, Controllers, Services & Tests
 └── employee-management-ui/        # React + Vite Frontend Project
     ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
+    ├── em-ui-deployment.yaml      # Kubernetes Deployment & Service Manifest
     ├── .env                       # Local Environment Variables (VITE_API_URL)
     ├── .env-example               # Example Environment Variables Template
     ├── package.json               # NPM Dependencies & Scripts
@@ -93,70 +89,58 @@ employee-management/
 
 ---
 
-## Rancher / Kubernetes Deployment (Terraform)
+## Kubernetes Deployment & GitHub Actions CI/CD
 
-Deploy the application to your **Rancher / Kubernetes Cluster** as illustrated in the architecture diagram:
+The application is containerized and deployed to a **Kubernetes Cluster** using native Kubernetes deployment manifests and automated GitHub Actions CI/CD workflows.
 
-### Prerequisites
+### 1. Automated CI/CD Pipeline ([`.github/workflows/publish-ghcr.yaml`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/.github/workflows/publish-ghcr.yaml))
 
-- **Terraform CLI**: `>= 1.3.0`
-- **Kubectl / Kubeconfig**: Authenticated access to your Rancher cluster (`~/.kube/config`).
-- **Nginx Ingress Controller**: Installed on your Rancher cluster.
-
----
-
-### Step 1: Build Container Images (Local Rancher or Remote Registry)
-
-#### Option A: Local Rancher (No Docker Hub push required)
-If you are running **Rancher Desktop** (with Docker / containerd runtime):
-```bash
-# Build API image locally
-docker build -t employee-management-api:latest ./employee-management-api
-
-# Build UI image locally
-docker build -t employee-management-ui:latest ./employee-management-ui
-```
-Because the Terraform configuration sets `image_pull_policy = "IfNotPresent"`, Kubernetes will use your locally built images directly.
-
-#### Option B: Push to Docker Hub or Registry (For remote Rancher clusters)
-```bash
-# Tag and push API image
-docker build -t <your-username>/employee-management-api:latest ./employee-management-api
-docker push <your-username>/employee-management-api:latest
-
-# Tag and push UI image
-docker build -t <your-username>/employee-management-ui:latest ./employee-management-ui
-docker push <your-username>/employee-management-ui:latest
-```
+On push to `main` branch, GitHub Actions executes:
+1. **API Build**: Compiles Spring Boot JAR with Maven (`mvn clean package -DskipTests`).
+2. **Container Build & Push**: Builds and pushes Docker images to GitHub Container Registry (GHCR):
+   - `ghcr.io/hiddenstar1000/employee-management-api:latest`
+   - `ghcr.io/hiddenstar1000/employee-management-ui:latest`
+3. **Automated Kubernetes Secret Sync**: Dynamically creates/updates `mongodb-atlas-secret` and `ghcr-secret` in namespace `app-em-test` using GitHub Environment Secrets (`PROD`).
+4. **Automated Kubernetes Deployment**: Applies `em-api-deployment.yaml` and `em-ui-deployment.yaml` to the cluster via `kubectl`.
 
 ---
 
-### Step 2: Apply Terraform Configuration
+### 2. Manual Kubernetes Deployment (`kubectl`)
 
+To deploy manually on your Kubernetes cluster:
+
+#### Step 1: Create Namespace & Secrets
 ```bash
-cd terraform
+# Create namespace
+kubectl create namespace app-em-test
 
-# Create variable file
-cp terraform.tfvars.example terraform.tfvars
+# Create registry pull secret for GHCR
+kubectl create secret docker-registry ghcr-secret \
+  --docker-server=ghcr.io \
+  --docker-username=hiddenstar1000 \
+  --docker-password="<YOUR_GH_PAT>" \
+  --namespace=app-em-test
+
+# Create MongoDB Atlas secret
+kubectl create secret generic mongodb-atlas-secret \
+  --from-literal=MONGODB_URI="<YOUR_MONGODB_ATLAS_URI>" \
+  --from-literal=ENCRYPTION_SECRET_KEY="<YOUR_32_CHAR_SECRET_KEY>" \
+  --namespace=app-em-test
 ```
 
-Update `terraform.tfvars` with your settings (e.g. `api_image`, `ui_image`, `mongodb_uri`).
-
+#### Step 2: Apply Deployment Manifests
 ```bash
-# Initialize & apply
-terraform init
-terraform plan
-terraform apply
+# Deploy Backend API & Service
+kubectl apply -f employee-management-api/em-api-deployment.yaml -n app-em-test
+
+# Deploy Frontend UI & Service
+kubectl apply -f employee-management-ui/em-ui-deployment.yaml -n app-em-test
 ```
 
-This provisions:
-- Namespace `employee-management`
-- Kubernetes Secret `mongodb-atlas-secret` with your Atlas URI
-- Spring Boot REST API Deployment & Service (Port 8080)
-- React SPA Frontend Deployment & Service (Port 80)
-- Nginx Ingress Controller routing `/` to Frontend and `/api/*` to Backend API
-
----
+#### Step 3: Verify Pods
+```bash
+kubectl get pods -n app-em-test -w
+```
 
 ---
 
