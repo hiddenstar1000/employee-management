@@ -1,0 +1,7 @@
+resources:
+  requests:
+    memory: "64Mi"
+    cpu: "100m"     # 1/10th of a core
+  limits:
+    memory: "256Mi"
+    cpu: "250m"     # 1/4th of a core
