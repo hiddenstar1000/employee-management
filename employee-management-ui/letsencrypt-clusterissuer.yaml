@@ -9,6 +9,10 @@ spec:
     privateKeySecretRef:
       name: letsencrypt-prod-private-key
     solvers:
-      - http01:
-          ingress:
-            class: traefik
+      - dns01:
+          route53:
+            region: us-east-1 
+            accessKeyID: AKIA2ARAAFF5UHPMETJ6
+            secretAccessKeySecretRef:
+              name: aws-route53-creds
+              key: secret-access-key
