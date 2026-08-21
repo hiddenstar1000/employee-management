@@ -129,13 +129,19 @@ kubectl create secret generic mongodb-atlas-secret \
   --namespace=app-em-test
 ```
 
-#### Step 2: Apply Deployment Manifests
+#### Step 2: Apply Deployment & Ingress Manifests (with Let's Encrypt SSL/TLS)
 ```bash
+# (Optional) Apply Let's Encrypt Production ClusterIssuer if cert-manager is installed
+kubectl apply -f employee-management-ui/letsencrypt-clusterissuer.yaml
+
 # Deploy Backend API & Service
 kubectl apply -f employee-management-api/em-api-deployment.yaml -n app-em-test
 
 # Deploy Frontend UI & Service
 kubectl apply -f employee-management-ui/em-ui-deployment.yaml -n app-em-test
+
+# Deploy Ingress with cert-manager annotations for TLS certificate provisioning
+kubectl apply -f employee-management-ui/em-ingress.yaml -n app-em-test
 ```
 
 #### Step 3: Verify Pods
