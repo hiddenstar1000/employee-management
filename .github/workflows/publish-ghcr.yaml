@@ -2,7 +2,7 @@ name: Publish Docker Images to GHCR
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
   workflow_dispatch:
 
 jobs:
@@ -14,6 +14,7 @@ jobs:
       packages: write
     env:
       KUBECONFIG_SECRET: ${{ secrets.KUBECONFIG }}
+      IMAGE_TAG: ${{ github.ref_name == 'dev' && 'dev' || 'latest' }}
 
     steps:
       - name: Checkout repository
@@ -52,7 +53,7 @@ jobs:
         with:
           context: ./employee-management-api
           push: true
-          tags: ghcr.io/hiddenstar1000/employee-management-api:latest
+          tags: ghcr.io/hiddenstar1000/employee-management-api:${{ env.IMAGE_TAG }}
 
       - name: Create .env file for UI
         run: |
@@ -65,7 +66,7 @@ jobs:
         with:
           context: ./employee-management-ui
           push: true
-          tags: ghcr.io/hiddenstar1000/employee-management-ui:latest
+          tags: ghcr.io/hiddenstar1000/employee-management-ui:${{ env.IMAGE_TAG }}
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL }}
 
