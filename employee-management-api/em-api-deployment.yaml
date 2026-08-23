@@ -31,6 +31,11 @@ spec:
             - containerPort: 8080
               name: http
           env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-boot-api-config
+                  key: PORT
             - name: JAVA_OPTS
               value: "-XX:MaxRAMPercentage=75.0"
             - name: MONGODB_URI
@@ -58,13 +63,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: http
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: http
             initialDelaySeconds: 15
             periodSeconds: 5
 ---
@@ -86,4 +91,4 @@ spec:
   ports:
     - name: http
       port: 8080
-      targetPort: 8080
+      targetPort: http
