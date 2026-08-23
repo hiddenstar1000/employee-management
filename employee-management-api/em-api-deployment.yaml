@@ -38,19 +38,16 @@ spec:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: MONGODB_URI
-                  optional: true
             - name: SPRING_DATA_MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: MONGODB_URI
-                  optional: true
             - name: ENCRYPTION_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: ENCRYPTION_SECRET_KEY
-                  optional: true
           resources:
             requests:
               memory: "512Mi"
