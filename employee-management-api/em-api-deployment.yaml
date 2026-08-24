@@ -25,12 +25,17 @@ spec:
         - name: ghcr-secret
       containers:
         - name: spring-boot-api
-          image: ghcr.io/hiddenstar1000/employee-management-api:latest
+          image: ghcr.io/hiddenstar1000/employee-management-api:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
               name: http
           env:
+            - name: PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: spring-boot-api-config
+                  key: PORT
             - name: JAVA_OPTS
               value: "-XX:MaxRAMPercentage=75.0"
             - name: MONGODB_URI
@@ -38,19 +43,16 @@ spec:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: MONGODB_URI
-                  optional: true
             - name: SPRING_DATA_MONGODB_URI
               valueFrom:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: MONGODB_URI
-                  optional: true
             - name: ENCRYPTION_SECRET_KEY
               valueFrom:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: ENCRYPTION_SECRET_KEY
-                  optional: true
           resources:
             requests:
               memory: "512Mi"
@@ -61,13 +63,13 @@ spec:
           livenessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: http
             initialDelaySeconds: 30
             periodSeconds: 10
           readinessProbe:
             httpGet:
               path: /
-              port: 8080
+              port: http
             initialDelaySeconds: 15
             periodSeconds: 5
 ---
@@ -89,4 +91,4 @@ spec:
   ports:
     - name: http
       port: 8080
-      targetPort: 8080
+      targetPort: http
