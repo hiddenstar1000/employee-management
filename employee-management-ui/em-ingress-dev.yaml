@@ -4,7 +4,7 @@ metadata:
   name: employee-management-ingress-dev
   namespace: app-em-test
 spec:
-  ingressClassName: nginx
+  ingressClassName: traefik
   rules:
     - host: dev.em.dixonai.net
       http:
