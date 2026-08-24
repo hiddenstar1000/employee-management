@@ -25,7 +25,7 @@ spec:
         - name: ghcr-secret
       containers:
         - name: spring-boot-api
-          image: ghcr.io/hiddenstar1000/employee-management-api:latest
+          image: ghcr.io/hiddenstar1000/employee-management-api:dev
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
