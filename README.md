@@ -25,7 +25,7 @@ graph TD
     
     subgraph Persistence Layer
         SpringAPI -->|"Runtime Profile (!test)"| MongoBD[("MongoDB Cloud Atlas / Local\n(MONGODB_URI)")]
-        SpringAPI -->|"Test Profile (test)"| H2DB[("H2 In-Memory DB\n(jdbc:h2:mem:employeedb)")]
+        SpringAPI -->|"Test Profile (test)"| NitriteDB[("Nitrite Embedded NoSQL DB\n(org.dizitart:nitrite)")]
     end
 ```
 
@@ -35,7 +35,7 @@ graph TD
 
 | Component | Subdirectory | Description | Tech Stack |
 | :--- | :--- | :--- | :--- |
-| **Backend API** | [`employee-management-api`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-api) | RESTful web services, business logic, MongoDB runtime & H2 test persistence | Java 25, Spring Boot 3.4.2, Spring Data MongoDB, Spring Data JPA, H2 |
+| **Backend API** | [`employee-management-api`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-api) | RESTful web services, business logic, MongoDB runtime & Nitrite test persistence | Java 25, Spring Boot 3.4.2, Spring Data MongoDB, Nitrite NoSQL DB |
 | **Frontend UI** | [`employee-management-ui`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/employee-management-ui) | Modern glassmorphic SPA dashboard for team directory management | React 18, Vite 5.4, Tailwind CSS, Lucide React, Axios |
 
 ---
@@ -50,7 +50,7 @@ graph TD
 - **AES-256-GCM Password Encryption**: Strong symmetric encryption for stored employee passwords using AES-256-GCM with secret key configured via `ENCRYPTION_SECRET_KEY` in `.env`.
 - **Dual Database Persistence Model**:
   - **Runtime Application**: Operates on **Spring Data MongoDB** using connection settings specified in `.env`.
-  - **Automated Test Suite**: Executes 100% offline using **Spring Data JPA** and an in-memory **H2 Database** (`jdbc:h2:mem:employeedb`).
+  - **Automated Test Suite**: Executes 100% offline using **Nitrite Embedded NoSQL Database** (`org.dizitart:nitrite`).
 - **Auto UUID Assignment**: Backend service automatically assigns a unique UUID string when creating new employees if an ID is omitted.
 - **Vite Reverse Proxy**: Seamless development routing where frontend `/api/employees` calls are automatically rewritten and proxied to backend `http://localhost:8080/employees`.
 - **Fault-Tolerant Exception Handling**: Global exception handler returning structured HTTP `503 Service Unavailable` JSON responses during database cluster connection timeouts.
@@ -202,7 +202,7 @@ Open your browser and navigate to **`http://localhost:5173`**.
 
 ## Running Automated Tests
 
-- **Automated Testing Suite**: 36 comprehensive test cases covering security filters, JWT token providers, controllers, services, global exception handling, and Spring Data JPA/H2 repositories (`mvn clean test`).
+- **Automated Testing Suite**: 36 comprehensive test cases covering security filters, JWT token providers, controllers, services, global exception handling, and Nitrite embedded NoSQL repositories (`mvn clean test`).
 
 ```bash
 cd employee-management-api

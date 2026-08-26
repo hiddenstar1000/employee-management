@@ -1,10 +1,11 @@
 package net.dixonai.employeemanagement.repository;
 
+import net.dixonai.employeemanagement.EmployeeManagementApiApplication;
 import net.dixonai.employeemanagement.model.Employee;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
@@ -12,16 +13,22 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@DataJpaTest
+import net.dixonai.employeemanagement.config.DataConfigTest;
+
+@SpringBootTest(classes = {EmployeeManagementApiApplication.class, DataConfigTest.class})
 @ActiveProfiles("test")
 class EmployeeRepositoryTest {
 
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @BeforeEach
+    void setUp() {
+        employeeRepository.deleteAll();
+    }
 
     @Test
-    void save_ShouldPersistEmployeeToH2Database() {
+    void save_ShouldPersistEmployeeToNitriteDatabase() {
         Employee employee = new Employee("emp-1", "Alice", "Johnson", "alice@example.com", "Finance");
 
         Employee saved = employeeRepository.save(employee);
@@ -32,7 +39,7 @@ class EmployeeRepositoryTest {
     }
 
     @Test
-    void findById_ShouldReturnEmployeeFromH2Database() {
+    void findById_ShouldReturnEmployeeFromNitriteDatabase() {
         Employee employee = new Employee("emp-2", "Bob", "Williams", "bob@example.com", "Marketing");
         employeeRepository.save(employee);
 
@@ -44,7 +51,7 @@ class EmployeeRepositoryTest {
     }
 
     @Test
-    void findAll_ShouldReturnAllEmployeesInH2Database() {
+    void findAll_ShouldReturnAllEmployeesInNitriteDatabase() {
         Employee e1 = new Employee("emp-3", "Charlie", "Brown", "charlie@example.com", "Sales");
         Employee e2 = new Employee("emp-4", "Diana", "Prince", "diana@example.com", "Legal");
         employeeRepository.save(e1);
@@ -52,11 +59,11 @@ class EmployeeRepositoryTest {
 
         List<Employee> employees = employeeRepository.findAll();
 
-        assertTrue(employees.size() >= 2);
+        assertEquals(2, employees.size());
     }
 
     @Test
-    void deleteById_ShouldRemoveEmployeeFromH2Database() {
+    void deleteById_ShouldRemoveEmployeeFromNitriteDatabase() {
         Employee employee = new Employee("emp-5", "Eve", "Adams", "eve@example.com", "Operations");
         employeeRepository.save(employee);
 
@@ -67,7 +74,7 @@ class EmployeeRepositoryTest {
     }
 
     @Test
-    void findByEmailId_ShouldReturnEmployeeFromH2Database() {
+    void findByEmailId_ShouldReturnEmployeeFromNitriteDatabase() {
         Employee employee = new Employee("emp-6", "Frank", "Castle", "frank@example.com", "Security");
         employeeRepository.save(employee);
 
@@ -77,4 +84,3 @@ class EmployeeRepositoryTest {
         assertEquals("Frank", found.get().getFirstName());
     }
 }
-
