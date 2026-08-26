@@ -64,5 +64,7 @@ jobs:
             echo "Deploying ${{ env.IMAGE_TAG }} build to server..."
             echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S -i
             sudo su -
+            echo "alias kubectl='microk8s kubectl'" >> ~/.bashrc
+            source ~/.bashrc
             kubectl rollout restart deployment/spring-boot-api -n app-em-test
             kubectl rollout restart deployment/react-frontend -n app-em-test
