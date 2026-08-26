@@ -42,7 +42,7 @@ public class SecurityConfig {
                 })
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/api/", "/auth/**", "/api/auth/**", "/actuator/**", "/api/actuator/**").permitAll()
+                .requestMatchers("/", "/api", "/auth/**", "/api/auth/**", "/actuator/**", "/api/actuator/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/employees", "/employees/**", "/api/employees", "/api/employees/**").authenticated()
                 .anyRequest().authenticated()
