@@ -5,6 +5,7 @@ metadata:
   namespace: app-em-test
   annotations:
     cert-manager.io/cluster-issuer: letsencrypt-dev
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
 spec:
   ingressClassName: traefik
   tls:
