@@ -1,0 +1,18 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: letsencrypt-dev
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: admin@dixonai.net
+    privateKeySecretRef:
+      name: letsencrypt-dev-private-key
+    solvers:
+      - dns01:
+          route53:
+            region: us-east-1
+            accessKeyID: AKIA2ARAAFF5UHPMETJ6
+            secretAccessKeySecretRef:
+              name: aws-route53-creds
+              key: secret-access-key
