@@ -7,7 +7,8 @@ metadata:
     cert-manager.io/cluster-issuer: letsencrypt-prod
     kubernetes.io/ingress.class: traefik
     traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
-    traefik.ingress.kubernetes.io/redirect-entrypoint: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: app-em-test-redirect-to-https@kubernetescrd
 spec:
   ingressClassName: traefik
   tls:
