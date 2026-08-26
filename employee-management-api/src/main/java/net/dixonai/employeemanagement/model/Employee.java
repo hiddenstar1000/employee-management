@@ -1,18 +1,13 @@
 package net.dixonai.employeemanagement.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "employees")
 @Document(collection = "employees")
 public class Employee {
     
-    @Id
     @org.springframework.data.annotation.Id
+    @org.dizitart.no2.objects.Id
     private String id;
     private String firstName;
     private String lastName;

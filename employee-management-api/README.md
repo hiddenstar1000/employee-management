@@ -1,6 +1,6 @@
 # Employee Management API
 
-A modern Spring Boot RESTful API for employee management built with Java 25, Spring Boot 3.4.2, Spring Security, JWT Authentication, Spring Data MongoDB (Runtime), and H2 In-Memory Database (Automated Testing).
+A modern Spring Boot RESTful API for employee management built with Java 25, Spring Boot 3.4.2, Spring Security, JWT Authentication, Spring Data MongoDB (Runtime), and Nitrite Embedded NoSQL Database (Automated Testing).
 
 ## Features
 
@@ -12,10 +12,10 @@ A modern Spring Boot RESTful API for employee management built with Java 25, Spr
 - **RESTful Endpoints**: Full CRUD operations for employee resources (`GET`, `POST`, `PUT`, `DELETE`).
 - **Dual Database Persistence Architecture**:
   - **Runtime Application**: Uses **Spring Data MongoDB** connecting dynamically via `MONGODB_URI` from `.env`.
-  - **Automated Tests**: Uses **Spring Data JPA & H2 In-Memory Database** (`jdbc:h2:mem:employeedb`), ensuring fast, isolated testing without requiring an active database server.
+  - **Automated Tests**: Uses **Nitrite Embedded NoSQL Database**, ensuring fast, isolated testing without requiring an active database server or SQL/JPA setup.
 - **Auto UUID Generation**: Automatically generates a unique UUID string when creating new employees if an ID is not supplied.
 - **Global Exception Handling**: Graceful exception handling for database connection timeouts (`MongoException`) returning friendly `503 Service Unavailable` JSON responses.
-- **Comprehensive Testing**: 27 test cases covering security, controllers, authentication, services, and repositories using JUnit 5, Mockito, and `@DataJpaTest`.
+- **Comprehensive Testing**: 36 test cases covering security, controllers, authentication, services, and repositories using JUnit 5, Mockito, and Nitrite repository testing.
 - **CORS Configured**: Pre-configured for cross-origin frontend requests.
 
 ---
@@ -24,12 +24,12 @@ A modern Spring Boot RESTful API for employee management built with Java 25, Spr
 
 | Technology | Version / Tool | Purpose |
 | :--- | :--- | :--- |
-| **Java** | 25 (Compiler Target 21) | Core Programming Language |
+| **Java** | 25 | Core Programming Language |
 | **Framework** | Spring Boot 3.4.2 | Backend Framework |
 | **Security** | Spring Security & JJWT 0.12.6 | Authentication & Token Management |
 | **Encryption** | AES-256-GCM | Strong Symmetric Password Encryption |
 | **Persistence (Runtime)** | Spring Data MongoDB | Production & Dev NoSQL Data Layer |
-| **Persistence (Testing)** | Spring Data JPA / H2 | Isolated In-Memory SQL Test Database |
+| **Persistence (Testing)** | Nitrite NoSQL Database (3.4.4) | Isolated In-Memory Embedded NoSQL Test Database |
 | **Build Tool** | Apache Maven 3.9+ | Dependency & Build Management |
 | **Testing** | JUnit 5, Mockito, MockMvc | Automated Testing Suite |
 
@@ -63,7 +63,7 @@ employee-management-api/
     │   │   │   └── Employee.java
     │   │   ├── repository/
     │   │   │   ├── EmployeeRepository.java (Common Interface)
-    │   │   │   ├── JpaEmployeeRepository.java (Test Profile)
+    │   │   │   ├── NitriteEmployeeRepository.java (Test Profile)
     │   │   │   └── MongoEmployeeRepository.java (App Profile)
     │   │   ├── security/
     │   │   │   ├── JwtAuthenticationFilter.java
@@ -202,7 +202,7 @@ mvn clean test
 - **`GlobalExceptionHandlerTest`**: Tests MongoException error handling and 503 Service Unavailable responses.
 - **`EmployeeControllerTest`**: MockMvc controller tests for HTTP status codes and JSON responses.
 - **`WelcomeControllerTest`**: Unit test for root status endpoint.
-- **`EmployeeRepositoryTest`**: Integration tests against H2 in-memory database using `@DataJpaTest` and `@ActiveProfiles("test")`.
+- **`EmployeeRepositoryTest`**: Integration tests against Nitrite in-memory embedded NoSQL database using `@SpringBootTest` and `@ActiveProfiles("test")`.
 
 
 ---

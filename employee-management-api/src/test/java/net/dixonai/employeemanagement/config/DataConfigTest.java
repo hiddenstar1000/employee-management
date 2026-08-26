@@ -1,11 +1,18 @@
 package net.dixonai.employeemanagement.config;
 
+import net.dixonai.employeemanagement.repository.EmployeeRepository;
+import net.dixonai.employeemanagement.repository.NitriteEmployeeRepository;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @Configuration
 @Profile("test")
-@EnableJpaRepositories(basePackages = "net.dixonai.employeemanagement.repository")
 public class DataConfigTest {
+
+    @Bean
+    public EmployeeRepository employeeRepository() {
+        return new NitriteEmployeeRepository();
+    }
 }
+
