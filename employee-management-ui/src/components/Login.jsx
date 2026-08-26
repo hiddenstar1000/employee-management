@@ -34,7 +34,7 @@ export default function Login({ onLoginSuccess }) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-brand-950 flex items-center justify-center p-4">
+    <div className="relative min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-brand-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-600/20 border border-brand-500/30 text-brand-400 mb-4 shadow-xl backdrop-blur-md">
@@ -126,6 +126,10 @@ export default function Login({ onLoginSuccess }) {
             </button>
           </form>
         </div>
+      </div>
+
+      <div className="absolute bottom-4 right-4 text-xs text-surface-400 font-mono select-none">
+        version: 1.0.0
       </div>
     </div>
   );
