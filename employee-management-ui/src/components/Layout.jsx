@@ -5,7 +5,7 @@ export default function Layout({ children, currentUser, onLogout }) {
   const initial = currentUser?.firstName ? currentUser.firstName.charAt(0).toUpperCase() : 'U';
 
   return (
-    <div className="min-h-screen bg-surface-50 font-sans">
+    <div className="min-h-screen bg-surface-100 font-sans">
       {/* Top Navigation */}
       <header className="bg-white border-b border-surface-200 sticky top-0 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
