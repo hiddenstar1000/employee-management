@@ -1,7 +1,8 @@
 package net.dixonai.employeemanagement.config;
 
-import jakarta.servlet.http.HttpServletResponse;
-import net.dixonai.employeemanagement.security.JwtAuthenticationFilter;
+import java.util.Arrays;
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -14,8 +15,8 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
-import java.util.Arrays;
-import java.util.List;
+import jakarta.servlet.http.HttpServletResponse;
+import net.dixonai.employeemanagement.security.JwtAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -41,7 +42,7 @@ public class SecurityConfig {
                 })
             )
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/auth/**", "/api/auth/**", "/actuator/**", "/api/actuator/**").permitAll()
+                .requestMatchers("/", "/api/", "/auth/**", "/api/auth/**", "/actuator/**", "/api/actuator/**").permitAll()
                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                 .requestMatchers("/employees", "/employees/**", "/api/employees", "/api/employees/**").authenticated()
                 .anyRequest().authenticated()
