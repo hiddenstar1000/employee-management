@@ -68,9 +68,6 @@ jobs:
               microk8s kubectl rollout restart deployment/spring-boot-api -n app-em-test
               microk8s kubectl rollout restart deployment/react-frontend -n app-em-test
             else
-              echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S -i
-              sudo su -
               echo "=== Executing PROD Deployment (Standard K8s) ==="
-              kubectl rollout restart deployment/spring-boot-api -n app-em-test
-              kubectl rollout restart deployment/react-frontend -n app-em-test
+              echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S bash -c "KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl rollout restart deployment/spring-boot-api -n app-em-test && KUBECONFIG=/etc/rancher/k3s/k3s.yaml kubectl rollout restart deployment/react-frontend -n app-em-test"
             fi
