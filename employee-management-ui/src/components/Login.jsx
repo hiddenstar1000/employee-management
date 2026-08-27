@@ -37,8 +37,8 @@ export default function Login({ onLoginSuccess }) {
     <div className="relative min-h-screen bg-gradient-to-br from-surface-900 via-surface-800 to-brand-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-brand-600/20 border border-brand-500/30 text-brand-400 mb-4 shadow-xl backdrop-blur-md">
-            <Building2 size={32} />
+          <div className="inline-flex items-center justify-center w-32 h-32 rounded-full overflow-hidden bg-brand-600/20 border border-brand-500/30 text-brand-400 mb-4 shadow-xl backdrop-blur-md">
+            <img src="logo.png" alt="logo" className="w-full h-full object-cover rounded-full" />
           </div>
           <h1 className="text-3xl font-bold text-white tracking-tight">Employee Hub</h1>
           <p className="text-surface-400 text-sm mt-1">Enterprise Management Portal</p>
@@ -113,7 +113,7 @@ export default function Login({ onLoginSuccess }) {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-2 py-3 px-4 bg-brand-600 hover:bg-brand-500 text-white font-semibold rounded-xl shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none text-base sm:text-sm"
+              className="w-full mt-2 py-3 px-4 bg-gradient-to-r from-sky-400 via-sky-500 to-blue-600 hover:from-sky-500 hover:to-blue-700 text-white font-semibold rounded-xl shadow-lg shadow-sky-500/30 flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.99] disabled:opacity-50 disabled:pointer-events-none text-base sm:text-sm"
             >
               {loading ? (
                 <div className="h-5 w-5 border-2 border-white border-t-transparent rounded-full animate-spin" />

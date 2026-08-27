@@ -3,8 +3,17 @@ kind: Ingress
 metadata:
   name: employee-management-ingress-dev
   namespace: app-em-test
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-dev
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - dev.em.dixonai.net
+      secretName: dev-em-dixonai-net-tls
   rules:
     - host: dev.em.dixonai.net
       http:
