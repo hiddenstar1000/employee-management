@@ -168,7 +168,7 @@ export default function EmployeeFormModal({ isOpen, onClose, onSubmit, employee 
                     Password <span className="text-red-500">*</span>
                   </label>
                   <span className="text-xs text-brand-600 flex items-center gap-1 font-medium">
-                    <ShieldCheck size={12} /> AES-256-GCM
+                    <ShieldCheck size={12} /> BCrypt Hashed
                   </span>
                 </div>
                 <div className="relative">
@@ -192,7 +192,7 @@ export default function EmployeeFormModal({ isOpen, onClose, onSubmit, employee 
                   </button>
                 </div>
                 <p className="text-xs text-surface-500">
-                  Password will be encrypted using strong AES-256-GCM encryption before saving.
+                  Password will be hashed using strong BCrypt password hashing before saving.
                 </p>
               </div>
             ) : (

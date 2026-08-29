@@ -48,14 +48,14 @@ class AuthControllerTest {
     void setUp() {
         mockMvc = MockMvcBuilders.standaloneSetup(authController).build();
         objectMapper = new ObjectMapper();
-        validEmployee = new Employee("1", "John", "Doe", "john@example.com", "Engineering", true, "ENC_GCM_v1:encryptedPass");
+        validEmployee = new Employee("1", "John", "Doe", "john@example.com", "Engineering", true, "$2a$10$mockBcryptPasswordHash");
     }
 
     @Test
     void login_Successful_ShouldReturn200AndToken() throws Exception {
         LoginRequest request = new LoginRequest("john@example.com", "password123");
         when(employeeRepository.findByEmailId("john@example.com")).thenReturn(Optional.of(validEmployee));
-        when(passwordEncryptionService.matches("password123", "ENC_GCM_v1:encryptedPass")).thenReturn(true);
+        when(passwordEncryptionService.matches("password123", "$2a$10$mockBcryptPasswordHash")).thenReturn(true);
         when(tokenProvider.generateToken(anyString(), anyString(), anyString())).thenReturn("mock-jwt-token");
 
         mockMvc.perform(post("/auth/login")
@@ -70,7 +70,7 @@ class AuthControllerTest {
     void login_InvalidPassword_ShouldReturn401() throws Exception {
         LoginRequest request = new LoginRequest("john@example.com", "wrongPass");
         when(employeeRepository.findByEmailId("john@example.com")).thenReturn(Optional.of(validEmployee));
-        when(passwordEncryptionService.matches("wrongPass", "ENC_GCM_v1:encryptedPass")).thenReturn(false);
+        when(passwordEncryptionService.matches("wrongPass", "$2a$10$mockBcryptPasswordHash")).thenReturn(false);
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)

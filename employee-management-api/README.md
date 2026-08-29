@@ -8,14 +8,14 @@ A modern Spring Boot RESTful API for employee management built with Java 25, Spr
   - Stateless API security using a custom `SecurityFilterChain` and JWT token authentication.
   - `POST /auth/login` endpoint for employee authentication issuing signed JWT tokens (`Bearer`).
   - Protected `/employees/**` endpoints requiring a valid `Authorization: Bearer <token>` header.
-- **AES-256-GCM Password Encryption**: Strong symmetric encryption (`AES/GCM/NoPadding`) for stored passwords using `ENCRYPTION_SECRET_KEY`.
+- **BCrypt Password Hashing**: Adaptive, salted one-way password hashing using Spring Security's `BCryptPasswordEncoder`.
 - **RESTful Endpoints**: Full CRUD operations for employee resources (`GET`, `POST`, `PUT`, `DELETE`).
 - **Dual Database Persistence Architecture**:
   - **Runtime Application**: Uses **Spring Data MongoDB** connecting dynamically via `MONGODB_URI` from `.env`.
   - **Automated Tests**: Uses **Nitrite Embedded NoSQL Database**, ensuring fast, isolated testing without requiring an active database server or SQL/JPA setup.
 - **Auto UUID Generation**: Automatically generates a unique UUID string when creating new employees if an ID is not supplied.
 - **Global Exception Handling**: Graceful exception handling for database connection timeouts (`MongoException`) returning friendly `503 Service Unavailable` JSON responses.
-- **Comprehensive Testing**: 36 test cases covering security, controllers, authentication, services, and repositories using JUnit 5, Mockito, and Nitrite repository testing.
+- **Comprehensive Testing**: 40 test cases covering security, controllers, authentication, services, and repositories using JUnit 5, Mockito, and Nitrite repository testing.
 - **CORS Configured**: Pre-configured for cross-origin frontend requests.
 
 ---
@@ -27,7 +27,7 @@ A modern Spring Boot RESTful API for employee management built with Java 25, Spr
 | **Java** | 25 | Core Programming Language |
 | **Framework** | Spring Boot 3.4.2 | Backend Framework |
 | **Security** | Spring Security & JJWT 0.12.6 | Authentication & Token Management |
-| **Encryption** | AES-256-GCM | Strong Symmetric Password Encryption |
+| **Password Hashing** | BCrypt (`BCryptPasswordEncoder`) | Strong One-Way Password Hashing |
 | **Persistence (Runtime)** | Spring Data MongoDB | Production & Dev NoSQL Data Layer |
 | **Persistence (Testing)** | Nitrite NoSQL Database (3.4.4) | Isolated In-Memory Embedded NoSQL Test Database |
 | **Build Tool** | Apache Maven 3.9+ | Dependency & Build Management |
@@ -110,7 +110,6 @@ Environment variables configured in `.env`:
 ```env
 MONGODB_URI=mongodb+srv://<username>:<password>@cluster.mongodb.net/employee-management?retryWrites=true&w=majority&serverSelectionTimeoutMS=5000
 PORT=8080
-ENCRYPTION_SECRET_KEY=c3VwZXJzZWNyZXRlc3RyaW5nMTIzNDU2Nzg5MDEy
 ```
 
 ### Installation & Execution
@@ -182,13 +181,13 @@ The application will start on `http://localhost:8080`.
 }
 ```
 
-*Note: Passwords are automatically encrypted using AES-256-GCM before saving and masked in response outputs.*
+*Note: Passwords are automatically hashed using BCrypt before saving and masked in response outputs.*
 
 ---
 
 ## Testing
 
-Run all 36 unit and integration tests using Maven:
+Run all 40 unit and integration tests using Maven:
 ```bash
 mvn clean test
 ```
@@ -197,8 +196,8 @@ mvn clean test
 - **`JwtTokenProviderTest`**: Tests JWT token generation, claim payload validation, and expiration parsing.
 - **`JwtAuthenticationFilterTest`**: Tests HTTP Authorization header extraction and SecurityContext authentication.
 - **`AuthControllerTest`**: Verifies login authentication, JWT token issuance, invalid passwords, and disabled login accounts.
-- **`EmployeeServiceTest`**: Unit tests for business logic, CRUD, AES-256-GCM encryption, and automatic UUID generation.
-- **`PasswordEncryptionServiceTest`**: Tests AES-256-GCM symmetric encryption, decryption, and password matching.
+- **`EmployeeServiceTest`**: Unit tests for business logic, CRUD, BCrypt password hashing, and automatic UUID generation.
+- **`PasswordEncryptionServiceTest`**: Tests BCrypt password hashing and password matching.
 - **`GlobalExceptionHandlerTest`**: Tests MongoException error handling and 503 Service Unavailable responses.
 - **`EmployeeControllerTest`**: MockMvc controller tests for HTTP status codes and JSON responses.
 - **`WelcomeControllerTest`**: Unit test for root status endpoint.

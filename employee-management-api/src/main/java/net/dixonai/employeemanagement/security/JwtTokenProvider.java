@@ -17,7 +17,7 @@ public class JwtTokenProvider {
     private final SecretKey key;
     private final long jwtExpirationInMs = 86400000; // 24 hours
 
-    public JwtTokenProvider(@Value("${app.security.encryption-key}") String rawKey) {
+    public JwtTokenProvider(@Value("${app.security.jwt-secret:c3VwZXJzZWNyZXRqd3RzZWNyZXRrZXlzdHJpbmc2Nzg5MDEy}") String rawKey) {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] keyBytes = digest.digest(rawKey.getBytes(StandardCharsets.UTF_8));

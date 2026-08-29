@@ -47,7 +47,7 @@ graph TD
   - Stateless API authentication using Spring Security filter chain and signed JWT tokens (`Authorization: Bearer <token>`).
   - Account-level login toggle (`loginEnabled`) and password requirement validation.
   - UI authentication gate: Full system UI is locked behind a modern glassmorphic Login screen.
-- **AES-256-GCM Password Encryption**: Strong symmetric encryption for stored employee passwords using AES-256-GCM with secret key configured via `ENCRYPTION_SECRET_KEY` in `.env`.
+- **BCrypt Password Hashing**: Adaptive, salted one-way password hashing using Spring Security's `BCryptPasswordEncoder`.
 - **Dual Database Persistence Model**:
   - **Runtime Application**: Operates on **Spring Data MongoDB** using connection settings specified in `.env`.
   - **Automated Test Suite**: Executes 100% offline using **Nitrite Embedded NoSQL Database** (`org.dizitart:nitrite`).
@@ -87,7 +87,7 @@ employee-management/
 │       └── redirect-middleware.yaml # Traefik HTTPS Redirect Middleware
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
-│   ├── .env                       # Local Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
+│   ├── .env                       # Local Environment Variables (MONGODB_URI, PORT)
 │   ├── .env-example               # Example Environment Variables Template
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
 │   ├── README.md                  # Comprehensive API Documentation

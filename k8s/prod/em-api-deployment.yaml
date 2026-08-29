@@ -48,11 +48,6 @@ spec:
                 secretKeyRef:
                   name: mongodb-atlas-secret
                   key: MONGODB_URI
-            - name: ENCRYPTION_SECRET_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: mongodb-atlas-secret
-                  key: ENCRYPTION_SECRET_KEY
           resources:
             requests:
               memory: "512Mi"
