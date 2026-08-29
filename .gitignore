@@ -2,3 +2,12 @@ terraform.tfvars
 *.tfstate
 *.tfstate.backup
 .terraform/
+
+# Secrets & Local Environment
+secrets.yaml
+secrets-*.yaml
+!secrets-example.yaml
+*.secret.yaml
+.env
+.env.local
+
