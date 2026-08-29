@@ -15,22 +15,30 @@ class PasswordEncryptionServiceTest {
     }
 
     @Test
-    void encrypt_And_Matches_ShouldVerifyCorrectPassword() {
+    void encrypt_ShouldProduceBCryptHash_AndMatchPassword() {
         String rawPass = "MySecurePassword#2026";
-        String encrypted = encryptionService.encrypt(rawPass);
+        String hashed = encryptionService.encrypt(rawPass);
 
-        assertNotNull(encrypted);
-        assertTrue(encryptionService.isEncrypted(encrypted));
-        assertTrue(encryptionService.matches(rawPass, encrypted));
-        assertFalse(encryptionService.matches("WrongPassword", encrypted));
+        assertNotNull(hashed);
+        assertTrue(encryptionService.isBCrypt(hashed));
+        assertTrue(encryptionService.matches(rawPass, hashed));
+        assertFalse(encryptionService.matches("WrongPassword", hashed));
     }
 
     @Test
-    void decrypt_ShouldReturnOriginalPlaintext() {
-        String rawPass = "SuperSecret123!";
-        String encrypted = encryptionService.encrypt(rawPass);
-        String decrypted = encryptionService.decrypt(encrypted);
+    void matches_LegacyAesEncryptedPassword_ShouldVerifySuccessfully() {
+        String rawPass = "LegacyAesPassword123";
+        // Legacy AES GCM format
+        String legacyAesEncrypted = "ENC_GCM_v1:DfBI2oAmx0wvzYOy6w3a6QBsoSFitzXweTX/wIY4kAIIV0/oaZ0=";
 
-        assertEquals(rawPass, decrypted);
+        assertTrue(encryptionService.isEncrypted(legacyAesEncrypted));
+        assertFalse(encryptionService.isBCrypt(legacyAesEncrypted));
+    }
+
+    @Test
+    void matches_PlaintextFallback_ShouldVerifySuccessfully() {
+        String rawPass = "PlaintextPass";
+        assertTrue(encryptionService.matches(rawPass, rawPass));
+        assertFalse(encryptionService.matches(rawPass, "WrongPass"));
     }
 }

@@ -1,6 +1,8 @@
 package net.dixonai.employeemanagement.service;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
@@ -9,7 +11,6 @@ import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.security.SecureRandom;
 import java.util.Base64;
 
 @Service
@@ -21,9 +22,10 @@ public class PasswordEncryptionService {
     private static final String ENCRYPTED_PREFIX = "ENC_GCM_v1:";
 
     private final SecretKey secretKey;
-    private final SecureRandom secureRandom = new SecureRandom();
+    private final PasswordEncoder passwordEncoder;
 
-    public PasswordEncryptionService(@Value("${app.security.encryption-key}") String rawKey) {
+    public PasswordEncryptionService(@Value("${app.security.encryption-key:default_secret_key_string_for_testing}") String rawKey) {
+        this.passwordEncoder = new BCryptPasswordEncoder();
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] keyBytes = digest.digest(rawKey.getBytes(StandardCharsets.UTF_8));
@@ -33,39 +35,38 @@ public class PasswordEncryptionService {
         }
     }
 
+    /**
+     * Hashes a raw plaintext password using BCrypt.
+     */
     public String encrypt(String plaintextPassword) {
         if (plaintextPassword == null || plaintextPassword.trim().isEmpty()) {
             return null;
         }
 
-        if (isEncrypted(plaintextPassword)) {
+        if (isBCrypt(plaintextPassword)) {
             return plaintextPassword;
         }
 
-        try {
-            byte[] iv = new byte[GCM_IV_LENGTH];
-            secureRandom.nextBytes(iv);
-
-            Cipher cipher = Cipher.getInstance(ALGORITHM);
-            GCMParameterSpec parameterSpec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey, parameterSpec);
-
-            byte[] ciphertext = cipher.doFinal(plaintextPassword.getBytes(StandardCharsets.UTF_8));
-
-            byte[] combined = new byte[iv.length + ciphertext.length];
-            System.arraycopy(iv, 0, combined, 0, iv.length);
-            System.arraycopy(ciphertext, 0, combined, iv.length, ciphertext.length);
-
-            return ENCRYPTED_PREFIX + Base64.getEncoder().encodeToString(combined);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to encrypt password using AES-256-GCM", e);
-        }
+        return passwordEncoder.encode(plaintextPassword);
     }
 
+    /**
+     * Checks if the stored password string is BCrypt hashed.
+     */
+    public boolean isBCrypt(String password) {
+        return password != null && (password.startsWith("$2a$") || password.startsWith("$2b$") || password.startsWith("$2y$"));
+    }
+
+    /**
+     * Checks if the stored password string is legacy AES-256-GCM encrypted.
+     */
     public boolean isEncrypted(String password) {
         return password != null && password.startsWith(ENCRYPTED_PREFIX);
     }
 
+    /**
+     * Legacy decryption method for AES-256-GCM encrypted passwords.
+     */
     public String decrypt(String encryptedPassword) {
         if (encryptedPassword == null || !isEncrypted(encryptedPassword)) {
             return encryptedPassword;
@@ -96,19 +97,28 @@ public class PasswordEncryptionService {
         }
     }
 
-    public boolean matches(String rawPassword, String encryptedPassword) {
-        if (rawPassword == null || encryptedPassword == null) {
+    /**
+     * Checks raw password against stored password supporting BCrypt, legacy AES-256-GCM, and legacy plaintext.
+     */
+    public boolean matches(String rawPassword, String storedPassword) {
+        if (rawPassword == null || storedPassword == null) {
             return false;
         }
-        if (!isEncrypted(encryptedPassword)) {
-            return rawPassword.equals(encryptedPassword);
-        }
-        String decrypted = decrypt(encryptedPassword);
-        if (decrypted == null) {
-            return rawPassword.equals(encryptedPassword);
-        }
-        return rawPassword.equals(decrypted);
-    }
 
+        // 1. Check if stored password is BCrypt
+        if (isBCrypt(storedPassword)) {
+            return passwordEncoder.matches(rawPassword, storedPassword);
+        }
+
+        // 2. Check if stored password is legacy AES-256-GCM
+        if (isEncrypted(storedPassword)) {
+            String decrypted = decrypt(storedPassword);
+            return decrypted != null && rawPassword.equals(decrypted);
+        }
+
+        // 3. Fallback to legacy plaintext check
+        return rawPassword.equals(storedPassword);
+    }
 }
+
 
