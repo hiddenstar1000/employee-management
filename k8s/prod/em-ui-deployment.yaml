@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: react-frontend
-  namespace: app-em-test
+  namespace: app-em-prod
   labels:
     app: employee-management
     component: ui
@@ -54,7 +54,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: react-frontend-service
-  namespace: app-em-test
+  namespace: app-em-prod
   labels:
     app: employee-management
     component: ui

@@ -68,9 +68,25 @@ employee-management/
 ├── docs/                          # Project Architecture & Media Assets
 │   └── images/
 │       └── deployment-architecture.jpg  # Rancher & MongoDB Atlas Architecture Diagram
+├── k8s/                           # Kubernetes Deployment Manifests
+│   ├── dev/                       # Development Environment Manifests
+│   │   ├── namespace.yaml         # Namespace Manifest (app-em-test)
+│   │   ├── secrets-example.yaml   # Template for MongoDB & GHCR Secrets
+│   │   ├── em-api-deployment.yaml # Dev API Deployment & Service Manifest
+│   │   ├── em-ui-deployment.yaml  # Dev UI Deployment & Service Manifest
+│   │   ├── em-ingress.yaml        # Dev Ingress Subdomain Routing Manifest
+│   │   ├── letsencrypt-clusterissuer.yaml # ClusterIssuer Manifest
+│   │   └── redirect-middleware.yaml # Traefik HTTPS Redirect Middleware
+│   └── prod/                      # Production Environment Manifests
+│       ├── namespace.yaml         # Namespace Manifest (app-em-prod)
+│       ├── secrets-example.yaml   # Template for MongoDB & GHCR Secrets
+│       ├── em-api-deployment.yaml # Production API Deployment & Service Manifest
+│       ├── em-ui-deployment.yaml  # Production UI Deployment & Service Manifest
+│       ├── em-ingress.yaml        # Production Ingress Subdomain Routing Manifest
+│       ├── letsencrypt-clusterissuer.yaml # ClusterIssuer Manifest
+│       └── redirect-middleware.yaml # Traefik HTTPS Redirect Middleware
 ├── employee-management-api/       # Spring Boot Backend API Project
 │   ├── Dockerfile                 # Multi-stage Docker Build (JDK 21 + Maven)
-│   ├── em-api-deployment.yaml     # Kubernetes Deployment & Service Manifest
 │   ├── .env                       # Local Environment Variables (MONGODB_URI, PORT, ENCRYPTION_SECRET_KEY)
 │   ├── .env-example               # Example Environment Variables Template
 │   ├── pom.xml                    # Maven Dependencies & Build Configuration
@@ -78,8 +94,6 @@ employee-management/
 │   └── src/                       # Security, Controllers, Services & Tests
 └── employee-management-ui/        # React + Vite Frontend Project
     ├── Dockerfile                 # Multi-stage Docker Build (Node 20 + Nginx)
-    ├── em-ui-deployment.yaml      # Kubernetes Deployment & Service Manifest
-    ├── em-ingress.yaml            # Kubernetes Ingress Subdomain Routing Manifest
     ├── .env                       # Local Environment Variables (VITE_API_URL)
     ├── .env-example               # Example Environment Variables Template
     ├── package.json               # NPM Dependencies & Scripts
@@ -101,8 +115,8 @@ On push to `main` branch, GitHub Actions executes:
 2. **Container Build & Push**: Builds and pushes Docker images to GitHub Container Registry (GHCR):
    - `ghcr.io/hiddenstar1000/employee-management-api:latest`
    - `ghcr.io/hiddenstar1000/employee-management-ui:latest`
-3. **Automated Kubernetes Secret Sync**: Dynamically creates/updates `mongodb-atlas-secret` and `ghcr-secret` in namespace `app-em-test` using GitHub Environment Secrets (`PROD`).
-4. **Automated Kubernetes Deployment**: Applies `em-api-deployment.yaml` and `em-ui-deployment.yaml` to the cluster via `kubectl`.
+3. **Automated Kubernetes Secret Sync**: Dynamically creates/updates secrets in namespace `app-em-prod` or `app-em-test`.
+4. **Automated Kubernetes Deployment**: Applies `k8s/prod/` or `k8s/dev/` manifests to the cluster via `kubectl`.
 
 ---
 
@@ -110,38 +124,24 @@ On push to `main` branch, GitHub Actions executes:
 
 To deploy manually on your Kubernetes cluster:
 
-#### Step 1: Create Namespace & Secrets
+#### Deploy Production (`k8s/prod/`)
 ```bash
-# Create namespace
-kubectl create namespace app-em-test
+# 1. Setup secrets template
+cp k8s/prod/secrets-example.yaml k8s/prod/secrets.yaml
+# (Edit k8s/prod/secrets.yaml with actual credentials)
 
-# Create registry pull secret for GHCR
-kubectl create secret docker-registry ghcr-secret \
-  --docker-server=ghcr.io \
-  --docker-username=hiddenstar1000 \
-  --docker-password="<YOUR_GH_PAT>" \
-  --namespace=app-em-test
-
-# Create MongoDB Atlas secret
-kubectl create secret generic mongodb-atlas-secret \
-  --from-literal=MONGODB_URI="<YOUR_MONGODB_ATLAS_URI>" \
-  --from-literal=ENCRYPTION_SECRET_KEY="<YOUR_32_CHAR_SECRET_KEY>" \
-  --namespace=app-em-test
+# 2. Apply all production manifests
+kubectl apply -f k8s/prod/
 ```
 
-#### Step 2: Apply Deployment & Ingress Manifests (with Let's Encrypt SSL/TLS)
+#### Deploy Development (`k8s/dev/`)
 ```bash
-# (Optional) Apply Let's Encrypt Production ClusterIssuer if cert-manager is installed
-kubectl apply -f employee-management-ui/letsencrypt-clusterissuer.yaml
+# 1. Setup secrets template
+cp k8s/dev/secrets-example.yaml k8s/dev/secrets.yaml
+# (Edit k8s/dev/secrets.yaml with actual credentials)
 
-# Deploy Backend API & Service
-kubectl apply -f employee-management-api/em-api-deployment.yaml -n app-em-test
-
-# Deploy Frontend UI & Service
-kubectl apply -f employee-management-ui/em-ui-deployment.yaml -n app-em-test
-
-# Deploy Ingress with cert-manager annotations for TLS certificate provisioning
-kubectl apply -f employee-management-ui/em-ingress.yaml -n app-em-test
+# 2. Apply all development manifests
+kubectl apply -f k8s/dev/
 ```
 
 #### Step 3: Verify Pods
