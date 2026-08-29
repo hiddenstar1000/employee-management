@@ -76,17 +76,6 @@ public class AuthController {
 
         logger.info("Login successful for email: {}", inputEmail);
 
-        // Auto-migrate legacy AES-256 or plaintext password to BCrypt in database
-        if (!passwordEncryptionService.isBCrypt(employee.getPassword())) {
-            logger.info("Upgrading stored password to BCrypt hash for email: {}", inputEmail);
-            employee.setPassword(passwordEncryptionService.encrypt(loginRequest.getPassword()));
-            try {
-                employeeRepository.save(employee);
-            } catch (Exception ex) {
-                logger.warn("Failed to auto-upgrade password to BCrypt in database: {}", ex.getMessage());
-            }
-        }
-
         String token = tokenProvider.generateToken(employee.getEmailId(), employee.getId(), employee.getDepartment());
 
         return ResponseEntity.ok(new LoginResponse(token, employee));

@@ -12,7 +12,7 @@ A modern, responsive React single-page application (SPA) built with Vite, Tailwi
 - **Modern Glassmorphic UI**: Vibrant, responsive user interface built with Tailwind CSS, custom color palettes, and glassmorphism elements.
 - **Team Directory Management**:
   - **View Employees**: Interactive employee directory displaying team member names, email addresses, departments, login status, and avatars.
-  - **Add Team Member**: Modal form dialog for adding new employees with optional system login enablement & password encryption.
+  - **Add Team Member**: Modal form dialog for adding new employees with optional system login enablement & BCrypt password hashing.
   - **Edit Team Member**: Inline modal for editing existing employee details.
   - **Delete Team Member**: Confirmation prompt and deletion handling.
 - **Automated Proxy Routing**: Pre-configured Vite reverse proxy forwarding frontend `/api` requests to backend REST API on `http://localhost:8080`.

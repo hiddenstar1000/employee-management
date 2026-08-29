@@ -52,14 +52,14 @@ class EmployeeServiceTest {
     @Test
     void createEmployee_WhenLoginEnabled_ShouldEncryptPassword() {
         Employee loginEmp = new Employee(null, "Alice", "Smith", "alice@example.com", "Engineering", true, "plainPass123");
-        when(passwordEncryptionService.encrypt("plainPass123")).thenReturn("ENC_GCM_v1:encryptedString");
+        when(passwordEncryptionService.encrypt("plainPass123")).thenReturn("$2a$10$mockBcryptHash");
         when(employeeRepository.save(any(Employee.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         Employee created = employeeService.createEmployee(loginEmp);
 
         assertNotNull(created);
         assertTrue(created.isLoginEnabled());
-        assertEquals("ENC_GCM_v1:encryptedString", created.getPassword());
+        assertEquals("$2a$10$mockBcryptHash", created.getPassword());
         verify(passwordEncryptionService, times(1)).encrypt("plainPass123");
         verify(employeeRepository, times(1)).save(loginEmp);
     }
