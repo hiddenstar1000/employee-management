@@ -16,6 +16,7 @@ A full-stack, enterprise-grade Employee Management Application consisting of a *
   - `/api/*` proxies API requests to the **Spring Boot API** pod.
 - **Inter-Service Communication**: React SPA uses relative `/api` paths, allowing seamless proxying by the Ingress Controller.
 - **Cloud Data Persistence**: Spring Boot REST API connects to **MongoDB Atlas** (Fully Managed Cloud DB) with credentials securely supplied via Secret Injection.
+- **Environment Configuration**: Non-sensitive application configuration (e.g. backend `PORT`) is injected into backend pods using Kubernetes ConfigMaps (`spring-boot-api-config` defined in `configmap.yaml`).
 
 ### Local Development Flow
 
@@ -72,6 +73,7 @@ employee-management/
 ├── k8s/                           # Kubernetes Deployment Manifests
 │   ├── dev/                       # Development Environment Manifests
 │   │   ├── namespace.yaml         # Namespace Manifest (app-em-dev)
+│   │   ├── configmap.yaml         # API Configuration ConfigMap (spring-boot-api-config)
 │   │   ├── secrets-example.yaml   # Template for MongoDB & GHCR Secrets
 │   │   ├── em-api-deployment.yaml # Dev API Deployment & Service Manifest
 │   │   ├── em-ui-deployment.yaml  # Dev UI Deployment & Service Manifest
@@ -80,6 +82,7 @@ employee-management/
 │   │   └── redirect-middleware.yaml # Traefik HTTPS Redirect Middleware
 │   └── prod/                      # Production Environment Manifests
 │       ├── namespace.yaml         # Namespace Manifest (app-em-prod)
+│       ├── configmap.yaml         # API Configuration ConfigMap (spring-boot-api-config)
 │       ├── secrets-example.yaml   # Template for MongoDB & GHCR Secrets
 │       ├── em-api-deployment.yaml # Production API Deployment & Service Manifest
 │       ├── em-ui-deployment.yaml  # Production UI Deployment & Service Manifest
@@ -108,6 +111,17 @@ employee-management/
 ## Kubernetes Deployment & GitHub Actions CI/CD
 
 The application is containerized and deployed to a **Kubernetes Cluster** using native Kubernetes deployment manifests and automated GitHub Actions CI/CD workflows.
+
+### Configuration & Manifest Overview
+
+The `k8s/` directory is partitioned into environment-specific folders (`k8s/dev/` and `k8s/prod/`) targeting the `app-em-dev` and `app-em-prod` namespaces:
+
+- **ConfigMap (`configmap.yaml`)**: Provisions non-sensitive environment configuration (`spring-boot-api-config`), such as `PORT: "8080"`. Backend deployment (`em-api-deployment.yaml`) references this via `valueFrom.configMapKeyRef`.
+- **Secrets (`secrets-example.yaml`)**: Security template for MongoDB connection URI (`MONGODB_URI`) and GitHub Container Registry credentials (`ghcr-secret`).
+- **Deployments & Services (`em-api-deployment.yaml`, `em-ui-deployment.yaml`)**: Manages pod specifications, container ports, liveness/readiness health probes, resource limits, and internal `ClusterIP` routing.
+- **Ingress (`em-ingress.yaml`)**: Defines external domain routing rules (`/` -> UI, `/api/*` -> API) and cert-manager SSL annotations.
+
+---
 
 ### 1. Automated CI/CD Pipeline ([`.github/workflows/publish-ghcr.yaml`](file:///Users/dixon/Projects/Personal/Dixon%20AI/employee-management/.github/workflows/publish-ghcr.yaml))
 
