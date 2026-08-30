@@ -2,7 +2,8 @@ name: Publish Docker Images to GHCR
 
 on:
   push:
-    branches: ["main", "dev"]
+    # branches: ["main", "dev"]
+    branches: ["main"]
   workflow_dispatch:
 
 jobs:
@@ -65,8 +66,8 @@ jobs:
             if [ "${{ github.ref_name }}" = "dev" ]; then
               sudo su -
               echo "=== Executing DEV Deployment (MicroK8s) ==="
-              microk8s kubectl rollout restart deployment/spring-boot-api -n app-em-test
-              microk8s kubectl rollout restart deployment/react-frontend -n app-em-test
+              microk8s kubectl rollout restart deployment/spring-boot-api -n app-em-dev
+              microk8s kubectl rollout restart deployment/react-frontend -n app-em-dev
             else
               echo "=== Executing PROD Deployment (Standard K8s) ==="
               echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S -i
