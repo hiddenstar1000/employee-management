@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: spring-boot-api-config
+  namespace: app-em-dev
+  labels:
+    app: employee-management
+    component: api
+    tier: backend
+data:
+  PORT: "8080"
