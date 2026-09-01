@@ -69,9 +69,8 @@ jobs:
               microk8s kubectl rollout restart deployment/spring-boot-api -n app-em-dev
               microk8s kubectl rollout restart deployment/react-frontend -n app-em-dev
             else
-              echo "=== Executing PROD Deployment (Standard K8s) ==="
-              echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S -i
-              sudo kubectl rollout restart deployment/spring-boot-api -n app-em-prod
-              echo "${{ secrets.SSH_USER_PASSWORD }}" | sudo -S -i
-              sudo kubectl rollout restart deployment/react-frontend -n app-em-prod
+              sudo su -
+              echo "=== Executing PROD Deployment (MicroK8s) ==="
+              microk8s kubectl rollout restart deployment/spring-boot-api -n app-em-prod
+              microk8s kubectl rollout restart deployment/react-frontend -n app-em-prod
             fi
