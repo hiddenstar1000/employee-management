@@ -143,40 +143,46 @@ To deploy manually on your Kubernetes cluster:
 #### Deploy Production (`k8s/prod/`)
 
 ```bash
-# 1. Setup secrets template
-cp k8s/prod/secrets-example.yaml k8s/prod/secrets.yaml
+# 1. Create namespace
+kubectl apply -f /k8s/prod/namespace.yaml
+
+# 2. Setup secrets template
+mv k8s/prod/secrets-example.yaml k8s/prod/secrets.yaml
 # (Edit k8s/prod/secrets.yaml with actual credentials)
 
-# 2. Apply all production secrets
+# 3. Apply all production secrets
 kubectl apply -f k8s/prod/secrets.yaml
 
-# 3. Apply all production configmaps
+# 4. Apply all production configmaps
 kubectl apply -f k8s/prod/configmap.yaml
 
-# 4. Apply all production manifests
+# 5. Apply all production manifests
 kubectl apply -f k8s/prod/
 
-# 5. Verify Pods
+# 6. Verify Pods
 kubectl get pods -n app-em-prod -w
 ```
 
 #### Deploy Development (`k8s/dev/`)
 
 ```bash
-# 1. Setup secrets template
-cp k8s/dev/secrets-example.yaml k8s/dev/secrets.yaml
+# 1. Create namespace
+kubectl apply -f /k8s/dev/namespace.yaml
+
+# 2. Setup secrets template
+mv k8s/dev/secrets-example.yaml k8s/dev/secrets.yaml
 # (Edit k8s/dev/secrets.yaml with actual credentials)
 
-# 2. Apply all development secrets
+# 3. Apply all development secrets
 kubectl apply -f k8s/dev/secrets.yaml
 
-# 3. Apply all development configmaps
+# 4. Apply all development configmaps
 kubectl apply -f k8s/dev/configmap.yaml
 
-# 4. Apply all development manifests
+# 5. Apply all development manifests
 kubectl apply -f k8s/dev/
 
-# 5. Verify Pods
+# 6. Verify Pods
 kubectl get pods -n app-em-dev -w
 ```
 
