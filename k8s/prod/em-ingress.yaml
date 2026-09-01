@@ -12,10 +12,10 @@ spec:
   ingressClassName: traefik
   tls:
     - hosts:
-        - em.dixonai.net
+        - employee-hub.dixonai.net
       secretName: em-dixonai-net-tls
   rules:
-    - host: em.dixonai.net
+    - host: employee-hub.dixonai.net
       http:
         paths:
           - path: /api
